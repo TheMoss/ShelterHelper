@@ -42,6 +42,11 @@ namespace ShelterHelper.Controllers
 			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 		}
 
+		public async Task<IActionResult>Create()
+		{
+			return View();
+		}
+
 		public async Task<IActionResult> Edit(int? id)
 		{
 			Animal animal = null;
@@ -56,6 +61,34 @@ namespace ShelterHelper.Controllers
 
 			return View(animal);
 		}
+		
+		public async Task<IActionResult> Delete(int? id)
+		{
+			Animal animal = null;
+			if (id == null) { return NotFound(); }
+			HttpResponseMessage response = await _httpClient.GetAsync($"https://localhost:7147/api/Animals/{id}");
+			if (response.IsSuccessStatusCode)
+			{  
+				animal = await response.Content.ReadAsAsync<Animal> ();
+			}
 
+			if (animal == null) { return NotFound (); }
+			return View(animal);
+		}
+
+		[HttpPost, ActionName("Delete")]
+		public async Task<IActionResult> DeleteConfirmed(int? id)
+		{
+			if (id == null) { return NotFound(); }
+
+			HttpResponseMessage response = await _httpClient.GetAsync($"https://localhost:7147/api/Animals/{id}");
+
+			if (response.IsSuccessStatusCode)
+			{
+				await _httpClient.DeleteAsync($"https://localhost:7147/api/Animals/{id}");
+			}
+
+			return RedirectToAction("Index");
+		}
 	}
 }

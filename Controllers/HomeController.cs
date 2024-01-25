@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
+using NuGet.Protocol;
 using ShelterHelper.Models;
 using System.Diagnostics;
 using System.Net.Http.Headers;
+using Newtonsoft.Json;
 
 namespace ShelterHelper.Controllers
 {
@@ -42,9 +44,24 @@ namespace ShelterHelper.Controllers
 			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 		}
 
-		public async Task<IActionResult>Create()
-		{
+		public IActionResult Create()
+		{			
 			return View();
+		}
+
+		[HttpPost, ActionName("Create")]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> CreateConfirmed([Bind("Id, Species, Name, Sex, Weight, AdmissionDay, AdoptionDay, Health, EmployeeId")] Animal animal)
+		{
+			animal.AdoptionDay = new DateOnly(1900, 1, 1);
+			if (ModelState.IsValid)
+			{					
+				HttpResponseMessage response = await _httpClient.PostAsJsonAsync($"https://localhost:7147/api/Animals", animal);
+				response.EnsureSuccessStatusCode();
+				return RedirectToAction("Index");
+			}
+
+			return View(animal);
 		}
 
 		public async Task<IActionResult> Edit(int? id)

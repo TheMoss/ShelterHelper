@@ -4,7 +4,7 @@ namespace ShelterHelper.Models
 {
     public class Animal
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         [Required]
         public string Species { get; set; }
@@ -21,11 +21,11 @@ namespace ShelterHelper.Models
         [Required]
         [Display(Name = "Admission day")]
         [DataType(DataType.Date)]
-        public DateTime AdmissionDay { get; set; }
+        public DateOnly AdmissionDay { get; set; }
 
         [Display(Name = "Adoption day")]
         [DataType(DataType.Date)]
-        public DateTime AdoptionDay { get; set; }
+        public DateOnly? AdoptionDay { get; set; }
 
         [Required]
         public string Health { get; set; }

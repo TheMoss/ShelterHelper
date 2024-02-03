@@ -30,14 +30,29 @@
             </div>
         </nav>
     </header>
+    <div class="side-menu">
+        <ul>
+            <li>Add a new animal</li>
+            <li>All animals</li>
+            <li>
+                <a asp-controller="Storage" asp-action="Index">Warehouse</a></li>
+            <li>Assignments</li>
+            <li>Account</li>
+            <li>Log out</li>
+        </ul>
+
+    </div>
     <div class="container">
-        <main role="main" class="pb-3">
+        <main role="main" class="pb-3">            
+               
             @RenderBody()
         </main>
     </div>
 
+    
+
     <footer class="border-top footer text-muted">
-        <div class="container">
+        <div>
             &copy; 2023 - ShelterHelper - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShelterHelper.Models;
+using X.PagedList;
 
 namespace ShelterHelper.Controllers
 {
@@ -11,17 +12,33 @@ namespace ShelterHelper.Controllers
 		{
 			_httpClientFactory = httpClientFactory;
 		}
-
+		
 		// GET: StorageController
-		public async Task <IActionResult> Index()
+		public async Task <IActionResult> Index(int? page, string sortOrder)
 		{
+            ViewBag.CurrentSortOrder = sortOrder;
             IEnumerable<Species> species = null;
             var httpClient = _httpClientFactory.CreateClient("Client");
             HttpResponseMessage response = await httpClient.GetAsync("https://localhost:7147/api/Species");
             if (response.IsSuccessStatusCode)
             {
                 species = await response.Content.ReadAsAsync<IEnumerable<Species>>();
-            }
+            }		
+
+			ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+			
+			switch (sortOrder)
+				{
+                case "name_desc":
+					species = species.OrderByDescending(s => s.SpeciesName);
+					break;
+				default:
+					species = species.OrderBy(s => s.SpeciesName);
+					break;
+                }
+            var pageNumber = page ?? 1;
+            var pagedList = species.ToPagedList(pageNumber, 2);
+            ViewBag.PagedList = pagedList;
             return View(species);
         }
 

@@ -1,0 +1,40 @@
+﻿@model ShelterHelperAPI.Models.Species
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Species</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="SpeciesName" class="control-label"></label>
+                <input asp-for="SpeciesName" class="form-control" />
+                <span asp-validation-for="SpeciesName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label>New item</label>
+                <select>
+                    <option>Select item category</option>
+                    <option>Accessory</option>
+                    <option>Bedding</option>
+                    <option>Diet</option>
+                    <option>Toy</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

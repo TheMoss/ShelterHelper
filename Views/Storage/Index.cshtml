@@ -1,0 +1,44 @@
+﻿@model IEnumerable<ShelterHelper.Models.Species>
+@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@{
+    
+    ViewData["Title"] = "Index";
+    ViewBag.Title = "Warehouse resources";
+    var pagedList = (IPagedList)ViewBag.PagedList;    
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.ActionLink("Species", "Index", new {sortOrder = ViewBag.NameSortParm})</th>
+            <th>@Html.DisplayNameFor(model => model.Diet.DietName)</th>
+            <th>@Html.DisplayNameFor(model => model.Bedding.BeddingName)</th>
+            <th>@Html.DisplayNameFor(model => model.Toy.ToyName)</th>
+            <th>@Html.DisplayNameFor(model => model.Accessory.AccessoryName)</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var product in ViewBag.PagedList) {
+        <tr>
+                <td>@product.SpeciesName</td>
+                <td>@product.Diet.DietName, @product.Diet.Quantity_kg kg </td>
+                <td>@product.Bedding.BeddingName, @product.Bedding.Quantity_kg kg</td>
+                <td>@product.Toy.ToyName, @product.Toy.Quantity pcs</td>
+                <td>@product.Accessory.AccessoryName, @product.Accessory.Quantity pcs</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@product.SpeciesName">Edit</a> |
+                <a asp-action="Details" asp-route-id="@product.SpeciesName">Details</a> |
+                <a asp-action="Delete" asp-route-id="@product.SpeciesName">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+<br/>
+@Html.PagedListPager((pagedList), page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSortOrder}))

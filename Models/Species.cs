@@ -1,21 +1,26 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace ShelterHelper.Models
 {
 	public class Species
 	{
-		[Key]
-		public int SpeciesId { get; set; }
+		[Key]		
+		public int? SpeciesId { get; set; }
         [Display(Name = "Species")]
         public string SpeciesName { get; set; }
 		public int DietId { get; set; }
-		public virtual Diet Diet { get; set; }
+		
+		public virtual Diet? Diet { get; set; }
 		public int BeddingId { get; set; }
-		public virtual Bedding Bedding { get; set; }
+		
+		public virtual Bedding? Bedding { get; set; }
 		public int ToyId { get; set; }
-		public virtual Toy Toy { get; set; }
+		
+		public virtual Toy? Toy { get; set; }
 		public int AccessoryId { get; set; }
-		public virtual Accessory Accessory { get; set; }
+		
+		public virtual Accessory? Accessory { get; set; }
 	}
 
 

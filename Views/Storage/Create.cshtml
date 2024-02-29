@@ -1,40 +1,70 @@
-﻿@model ShelterHelperAPI.Models.Species
-
+﻿@model ShelterHelper.ViewModels.CreateSpeciesViewModel;
 @{
-    ViewData["Title"] = "Create";
+		ViewData["Title"] = "Create";
 }
 
 <h1>Create</h1>
 
-<h4>Species</h4>
+<h4>Create a new species</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="SpeciesName" class="control-label"></label>
-                <input asp-for="SpeciesName" class="form-control" />
-                <span asp-validation-for="SpeciesName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label>New item</label>
-                <select>
-                    <option>Select item category</option>
-                    <option>Accessory</option>
-                    <option>Bedding</option>
-                    <option>Diet</option>
-                    <option>Toy</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
+	
+		
+	<div class="col-md-4">
+		<form asp-action="Create">
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+			<div class="form-group">
+				<label asp-for="SpeciesName" class="control-label"></label>
+				<input asp-for="SpeciesName" class="form-control" />
+				<span asp-validation-for="SpeciesName" class="text-danger"></span>
+			</div>	
+
+
+			<div class="form-group">
+				<label asp-for="SelectedDietId" class="control-label"></label> 
+				<select asp-for="SelectedDietId" asp-items = "new SelectList(Model.DietsList, nameof(Diet.DietId), nameof(Diet.DietName))" class="form-control">
+					<option value="">Select option</option>
+				</select>
+				 <span asp-validation-for="SelectedDietId" class="text-danger"></span>	 		
+			</div>
+			
+			<div class="form-group">
+				<label asp-for="SelectedBeddingId" class="control-label"></label>
+				<select asp-for="SelectedBeddingId" asp-items="new SelectList(Model.BeddingsList, nameof(Bedding.BeddingId), nameof(Bedding.BeddingName))" class="form-control">
+					<option value="">Select option</option>
+				</select>
+				<span asp-validation-for="SelectedBeddingId" class="text-danger"></span>
+			</div>
+
+			<div class="form-group">
+				<label asp-for="SelectedToyId" class="control-label"></label>
+				<select asp-for="SelectedToyId" asp-items="new SelectList(Model.ToysList, nameof(Toy.ToyId), nameof(Toy.ToyName))" class="form-control">
+					<option value="">Select option</option>
+				</select>
+				<span asp-validation-for="SelectedToyId" class="text-danger"></span>
+			</div>
+
+			<div class="form-group">
+				<label asp-for="SelectedAccessoryId" class="control-label"></label>
+				<select asp-for="SelectedAccessoryId" asp-items="new SelectList(Model.AccessoriesList, nameof(Accessory.AccessoryId), nameof(Accessory.AccessoryName))" class="form-control">
+					<option value="">Select option</option>
+				</select>
+				<span asp-validation-for="SelectedAccessoryId" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<input type="submit" value="Create" class="btn btn-primary" />
+			</div>
+		</form>
+	</div>
+	
+	
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+	<a asp-action="Index">Back to List</a>
 </div>
-
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}

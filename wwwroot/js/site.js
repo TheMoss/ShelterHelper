@@ -2,3 +2,13 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
+
+
+
+function closeModal(selector) {	
+	$(selector).modal("hide");
+}
+
+function openModal(selector) {
+	$(selector).modal("show");
+}

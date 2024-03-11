@@ -2,6 +2,9 @@
 using ShelterHelper.ViewModels;
 using X.PagedList;
 using Newtonsoft.Json;
+using ShelterHelper.Models;
+using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace ShelterHelper.Controllers
 {
@@ -37,10 +40,12 @@ namespace ShelterHelper.Controllers
 					break;
 			}
 			var pageNumber = page ?? 1;
-			var pagedList = species.ToPagedList(pageNumber, 2);
+			var pagedList = species.ToPagedList(pageNumber, 10);
 			ViewBag.PagedList = pagedList;
 			return View(species);
 		}
+
+
 
 		// GET: StorageController/Details/5
 		public ActionResult Details(int id)
@@ -63,7 +68,90 @@ namespace ShelterHelper.Controllers
 			
 			return View(viewModel);
 		}
-		
+		// POST: StorageController/Diet
+		[HttpPost]
+		public async Task<ActionResult> CreateNewDiet(CreateSpeciesViewModel viewModel)
+		{
+			var httpClient = _httpClientFactory.CreateClient("Client");
+			var diet = new Diet()
+			{
+				DietName = viewModel.Diet.DietName,
+				Quantity_kg = viewModel.Diet.Quantity_kg
+			};
+
+			if (ModelState.IsValid)
+			{
+				//check if entry exists or create a new one
+				HttpResponseMessage response = await httpClient.PostAsJsonAsync($"https://localhost:7147/api/Storage/Diet", diet);
+				response.EnsureSuccessStatusCode();
+				TempData["Message"] = "Operation successful";
+				return RedirectToAction("Index");
+			}
+			return RedirectToAction("Create");
+		}
+		// POST: StorageController/Bedding
+		[HttpPost]
+		public async Task<ActionResult> CreateNewBedding(CreateSpeciesViewModel viewModel)
+		{
+			var httpClient = _httpClientFactory.CreateClient("Client");
+			var bedding = new Bedding()
+			{
+				BeddingName = viewModel.Bedding.BeddingName,
+				Quantity_kg = viewModel.Bedding.Quantity_kg
+			};
+
+			if (ModelState.IsValid)
+			{
+				//check if entry exists or create a new one
+				HttpResponseMessage response = await httpClient.PostAsJsonAsync($"https://localhost:7147/api/Storage/Bedding", bedding);
+				response.EnsureSuccessStatusCode();
+				TempData["Message"] = "Operation successful";
+				return RedirectToAction("Index");
+			}
+			return RedirectToAction("Create");
+		}
+		// POST: StorageController/Toy
+		[HttpPost]
+		public async Task<ActionResult> CreateNewToy(CreateSpeciesViewModel viewModel)
+		{
+			var httpClient = _httpClientFactory.CreateClient("Client");
+			var toy = new Toy()
+			{
+				ToyName = viewModel.Toy.ToyName,
+				Quantity = viewModel.Toy.Quantity
+			};
+
+			if (ModelState.IsValid)
+			{
+				//check if entry exists or create a new one
+				HttpResponseMessage response = await httpClient.PostAsJsonAsync($"https://localhost:7147/api/Storage/Toy", toy);
+				response.EnsureSuccessStatusCode();
+				TempData["Message"] = "Operation successful";
+				return RedirectToAction("Index");
+			}
+			return RedirectToAction("Create");
+		}
+		// POST: StorageController/Accessory
+		[HttpPost]
+		public async Task<ActionResult> CreateNewAccessory(CreateSpeciesViewModel viewModel)
+		{
+			var httpClient = _httpClientFactory.CreateClient("Client");
+			var accessory = new Accessory()
+			{
+				AccessoryName = viewModel.Accessory.AccessoryName,
+				Quantity = viewModel.Accessory.Quantity
+			};
+
+			if (ModelState.IsValid)
+			{
+				//check if entry exists or create a new one
+				HttpResponseMessage response = await httpClient.PostAsJsonAsync($"https://localhost:7147/api/Storage/Bedding", accessory);
+				response.EnsureSuccessStatusCode();
+				TempData["Message"] = "Operation successful";
+				return RedirectToAction("Index");
+			}
+			return RedirectToAction("Create");
+		}
 
 		// POST: StorageController/Create
 		[HttpPost]
@@ -83,9 +171,16 @@ namespace ShelterHelper.Controllers
 			
 			if (ModelState.IsValid)
 			{
-				//check if entry exists or create a new one
-				HttpResponseMessage response = await httpClient.PostAsJsonAsync($"https://localhost:7147/api/Species", species);
-				response.EnsureSuccessStatusCode();
+				try
+				{
+					HttpResponseMessage response = await httpClient.PostAsJsonAsync($"https://localhost:7147/api/Species", species);
+                    response.EnsureSuccessStatusCode();
+                }
+				catch (HttpRequestException ex)
+				{
+					throw new HttpRequestException("Adding a new record to the database failed", ex);
+				}
+                
 				return RedirectToAction("Index");
 			}
 			return View(species);

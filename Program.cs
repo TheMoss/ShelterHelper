@@ -1,10 +1,18 @@
 using ShelterHelper.Controllers;
+using System.Net.Http.Headers;
+using System.Net.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddHttpClient<HomeController>();
+builder.Services.AddHttpClient("Client", httpClient =>
+{
+	httpClient.BaseAddress = new Uri("https://localhost:7147/");
+	httpClient.DefaultRequestHeaders.Accept.Clear();
+	httpClient.DefaultRequestHeaders.Accept.Add(
+		new MediaTypeWithQualityHeaderValue("application/json"));
+});
 
 var app = builder.Build();
 
@@ -24,7 +32,7 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllerRoute(
-	name: "default",
-	pattern: "{controller=Home}/{action=Index}/{id?}");
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

@@ -29,7 +29,7 @@ namespace ShelterHelper.Models
 	public class Diet
 	{
 		[Key]
-		public int DietId { get; set; }
+		public int? DietId { get; set; }
         [Display(Name = "Diet")]
 		[StringLength(20, MinimumLength = 3)]
         public string DietName { get; set; }
@@ -40,7 +40,7 @@ namespace ShelterHelper.Models
 	public class Bedding
 	{
 		[Key]
-		public int BeddingId { get; set; }
+		public int? BeddingId { get; set; }
         [Display(Name = "Bedding")]
 		[StringLength(20, MinimumLength = 3)]
 		public string BeddingName { get; set; }
@@ -51,7 +51,7 @@ namespace ShelterHelper.Models
 	public class Toy
 	{
 		[Key]
-		public int ToyId { get; set; }
+		public int? ToyId { get; set; }
         [Display(Name = "Toy")]
 		[StringLength(20, MinimumLength = 3)]
 		public string ToyName { get; set; }
@@ -62,7 +62,7 @@ namespace ShelterHelper.Models
 	public class Accessory
 	{
 		[Key]
-		public int AccessoryId { get; set; }
+		public int? AccessoryId { get; set; }
         [Display(Name = "Accessory")]
 		[StringLength(20, MinimumLength = 3)]
 		public string AccessoryName { get; set; }

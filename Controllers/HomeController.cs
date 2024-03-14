@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ShelterHelper.Models;
 using ShelterHelper.ViewModels;
 using System.Diagnostics;
+using System.Net.Http.Headers;
 using X.PagedList;
 
 namespace ShelterHelper.Controllers
@@ -82,18 +85,29 @@ namespace ShelterHelper.Controllers
 			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 		}
 
-		public ActionResult Create()
-		{			
-			return View();
+		public async Task<ActionResult> Create()
+		{
+			var httpClient = _httpClientFactory.CreateClient("Client");
+			HttpResponseMessage response = await httpClient.GetAsync("https://localhost:7147/api/Species");
+			IEnumerable<Species> species = null;
+			var viewModel = new AnimalViewModel();
+			if (response.IsSuccessStatusCode)
+			{				
+				species = await response.Content.ReadAsAsync<IEnumerable<Species>>();
+
+				viewModel.SpeciesList = species.ToList();
+			}
+
+			return View(viewModel);
 		}
 
 		[HttpPost, ActionName("Create")]
 		[ValidateAntiForgeryToken]
-		public async Task<ActionResult> CreateConfirmed([Bind("Id, Species, Name, Sex, Weight, AdmissionDay, AdoptionDay, Health, EmployeeId")] Animal animal)
+		public async Task<ActionResult> CreateConfirmed([Bind("Id, Species, Name, Sex, Weight, AdmissionDay, AdoptionDay, Health, EmployeeId")] AnimalViewModel animal)
 		{
 			var httpClient = _httpClientFactory.CreateClient("Client");
 
-			animal.AdoptionDay = new DateOnly(1900, 1, 1);
+			animal.Animal.AdoptionDay = new DateOnly(1900, 1, 1);
 			if (ModelState.IsValid)
 			{					
 				HttpResponseMessage response = await httpClient.PostAsJsonAsync($"https://localhost:7147/api/Animals", animal);

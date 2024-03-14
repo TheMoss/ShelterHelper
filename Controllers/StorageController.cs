@@ -19,7 +19,7 @@ namespace ShelterHelper.Controllers
 		// GET: StorageController
 		public async Task<IActionResult> Index(int? page, string sortOrder)
 		{
-			ViewBag.CurrentSortOrder = sortOrder;
+			ViewBag.CurrentStorageSortOrder = sortOrder;
 			IEnumerable<ShelterHelper.Models.Species> species = null;
 			var httpClient = _httpClientFactory.CreateClient("Client");
 			HttpResponseMessage response = await httpClient.GetAsync("https://localhost:7147/api/Species");
@@ -28,7 +28,7 @@ namespace ShelterHelper.Controllers
 				species = await response.Content.ReadAsAsync<IEnumerable<Models.Species>>();
 			}
 
-			ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+			ViewBag.StorageSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
 
 			switch (sortOrder)
 			{
@@ -58,7 +58,7 @@ namespace ShelterHelper.Controllers
 		public async Task<ActionResult> Create()
 		{
 			var httpClient = _httpClientFactory.CreateClient("Client");
-			HttpResponseMessage response = await httpClient.GetAsync("https://localhost:7147/GetStorage");
+			HttpResponseMessage response = await httpClient.GetAsync("https://localhost:7147/api/Storage");
 			var viewModel = new CreateSpeciesViewModel();
 			if (response.IsSuccessStatusCode)
 			{

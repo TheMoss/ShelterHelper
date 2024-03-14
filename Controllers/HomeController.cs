@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using ShelterHelper.Models;
+using ShelterHelper.ViewModels;
 using System.Diagnostics;
-using System.Net.Http.Headers;
+using X.PagedList;
 
 namespace ShelterHelper.Controllers
 {
@@ -18,16 +19,59 @@ namespace ShelterHelper.Controllers
 
 		}
 
-		public async Task<ActionResult> Index()
+		public async Task<ActionResult> Index(int? page, string sortOrder)
 		{
-
+			ViewBag.CurrentAnimalSortOrder = sortOrder;
 			IEnumerable<Animal> animals = null;
 			var httpClient = _httpClientFactory.CreateClient("Client");
 			HttpResponseMessage response = await httpClient.GetAsync("https://localhost:7147/api/Animals");
+			
 			if (response.IsSuccessStatusCode)
 			{
 				animals = await response.Content.ReadAsAsync<IEnumerable<Animal>>();
 			}
+
+			ViewBag.AnimalsSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+			ViewBag.SexParam = sortOrder == "Sex" ? "sex_desc" : "Sex";
+			ViewBag.AdmissionParam = sortOrder == "AdmissionDate" ? "admission_date_desc" : "AdmissionDate";
+			ViewBag.AdoptionParam = sortOrder == "AdoptionDate" ? "adoption_date_desc" : "AdoptionDate";
+			ViewBag.EmployeeParam = sortOrder == "Employee" ? "employee_desc" : "Employee";
+			switch(sortOrder)
+			{
+				case "name_desc":
+					animals = animals.OrderByDescending(a => a.Name);
+					break;
+				case "Sex":
+					animals = animals.OrderBy(a => a.Sex);
+					break;
+				case "sex_desc":
+					animals = animals.OrderByDescending(a => a.Sex);
+					break;
+				case "AdmissionDate":
+					animals = animals.OrderBy(a => a.AdmissionDay);
+					break;
+				case "admission_date_desc":
+					animals = animals.OrderByDescending(a => a.AdmissionDay);
+					break;
+				case "AdoptionDate":
+					animals = animals.OrderBy(a => a.AdoptionDay);
+					break;
+				case "adoption_date_desc":
+					animals = animals.OrderByDescending(a => a.AdoptionDay);
+					break;
+				case "Employee":
+					animals = animals.OrderBy(a => a.EmployeeId);
+					break;
+				case "employee_desc":
+					animals = animals.OrderByDescending(a=>a.EmployeeId);
+					break;
+				default:
+					animals = animals.OrderBy(a => a.Name);
+					break;
+			}
+			var pageNumber = page ?? 1;
+			var pagedList = animals.ToPagedList(pageNumber, 10);
+			ViewBag.AnimalsPagedList = pagedList;
 			return View(animals);
 		}
 

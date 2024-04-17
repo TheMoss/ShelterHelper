@@ -1,15 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ShelterHelper.Models;
 using ShelterHelper.ViewModels;
 using System.Diagnostics;
-using System.Net.Http.Headers;
 using X.PagedList;
 
 namespace ShelterHelper.Controllers
 {
-	public class HomeController : Controller
+    public class HomeController : Controller
 	{
 		private readonly ILogger<HomeController> _logger;		
 		private readonly IHttpClientFactory _httpClientFactory;
@@ -34,15 +31,18 @@ namespace ShelterHelper.Controllers
 				animals = await response.Content.ReadAsAsync<IEnumerable<Animal>>();
 			}
 
-			ViewBag.AnimalsSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+			ViewBag.AnimalsSortParm = sortOrder == "Species" ? "species_desc" : "Species";
 			ViewBag.SexParam = sortOrder == "Sex" ? "sex_desc" : "Sex";
 			ViewBag.AdmissionParam = sortOrder == "AdmissionDate" ? "admission_date_desc" : "AdmissionDate";
 			ViewBag.AdoptionParam = sortOrder == "AdoptionDate" ? "adoption_date_desc" : "AdoptionDate";
 			ViewBag.EmployeeParam = sortOrder == "Employee" ? "employee_desc" : "Employee";
 			switch(sortOrder)
 			{
-				case "name_desc":
-					animals = animals.OrderByDescending(a => a.Name);
+				case "Species":
+					animals = animals.OrderBy(a => a.Species.SpeciesName);
+					break;
+				case "species_desc":
+					animals = animals.OrderByDescending(a => a.Species.SpeciesName);
 					break;
 				case "Sex":
 					animals = animals.OrderBy(a => a.Sex);
@@ -103,11 +103,22 @@ namespace ShelterHelper.Controllers
 
 		[HttpPost, ActionName("Create")]
 		[ValidateAntiForgeryToken]
-		public async Task<ActionResult> CreateConfirmed([Bind("Id, Species, Name, Sex, Weight, AdmissionDay, AdoptionDay, Health, EmployeeId")] AnimalViewModel animal)
+		public async Task<ActionResult> CreateConfirmed(AnimalViewModel animalViewModel)
 		{
 			var httpClient = _httpClientFactory.CreateClient("Client");
 
-			animal.Animal.AdoptionDay = new DateOnly(1900, 1, 1);
+            var animal = new Models.Animal()
+            {
+                SpeciesId = animalViewModel.SpeciesId,
+                Name = animalViewModel.Name,
+                Sex = animalViewModel.Sex,
+                Weight = animalViewModel.Weight,
+                AdmissionDay = animalViewModel.AdmissionDay,
+				Health = animalViewModel.Health,
+				EmployeeId = animalViewModel.EmployeeId
+            };
+
+            animal.AdoptionDay = new DateOnly(1900, 1, 1);
 			if (ModelState.IsValid)
 			{					
 				HttpResponseMessage response = await httpClient.PostAsJsonAsync($"https://localhost:7147/api/Animals", animal);

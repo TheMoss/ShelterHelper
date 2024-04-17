@@ -54,6 +54,11 @@ namespace ShelterHelper.Controllers
 			return View();
 		}
 
+		public async Task<ActionResult> AddResources()
+		{
+			return View();
+		}
+
 		// GET: StorageController/Create
 		public async Task<ActionResult> Create()
 		{
@@ -145,7 +150,7 @@ namespace ShelterHelper.Controllers
 			if (ModelState.IsValid)
 			{
 				//check if entry exists or create a new one
-				HttpResponseMessage response = await httpClient.PostAsJsonAsync($"https://localhost:7147/api/Storage/Bedding", accessory);
+				HttpResponseMessage response = await httpClient.PostAsJsonAsync($"https://localhost:7147/api/Storage/Accessory", accessory);
 				response.EnsureSuccessStatusCode();
 				TempData["Message"] = "Operation successful";
 				return RedirectToAction("Index");
@@ -161,7 +166,7 @@ namespace ShelterHelper.Controllers
 			var httpClient = _httpClientFactory.CreateClient("Client");
 			var species = new Models.Species()
 			{
-				SpeciesName = viewModel.SpeciesName,
+				SpeciesName = viewModel.Species.SpeciesName,
 				DietId = viewModel.SelectedDietId,
 				BeddingId = viewModel.SelectedBeddingId,
 				ToyId = viewModel.SelectedToyId,

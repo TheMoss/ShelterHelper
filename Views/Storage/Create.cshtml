@@ -5,16 +5,16 @@
 
 <h1>Create</h1>
 
-<h4>Create a new species</h4>
+<h4>Add a new species</h4>
 <hr />
 <div class="row">
 	<div class="col-md-4">
 		<form asp-action="Create" id="newSpecies">
 			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 			<div class="form-group">
-				<label asp-for="SpeciesName" class="control-label"></label>
-				<input asp-for="SpeciesName" class="form-control" id="name-input" placeholder="Insert the name here"/>
-				<span asp-validation-for="SpeciesName" class="text-danger"></span>
+				<label asp-for="Species.SpeciesName" class="control-label"></label>
+				<input asp-for="Species.SpeciesName" class="form-control" id="name-input" placeholder="Insert the name here"/>
+				<span asp-validation-for="Species.SpeciesName" class="text-danger"></span>
 			</div>
 			<div class="form-group">
 				<label asp-for="SelectedDietId" class="control-label"></label>
@@ -46,7 +46,6 @@
 					</select>
 					<button id="openToyModal" class="btn btn-success" type="button" onclick="openModal(getElementById('toyModal'))">Add a new toy type</button>
 				</div>
-				
 				<span asp-validation-for="SelectedToyId" class="text-danger"></span>
 			</div>
 
@@ -78,12 +77,12 @@
 						<div class="modal-body">
 							<div class="form-group">
 								<label asp-for="Diet.DietName" class="control-label"></label>
-								<input asp-for="Diet.DietName" class="form-control" />
+								<input asp-for="Diet.DietName" class="form-control" placeholder="Insert the name here" />
 								<span asp-validation-for="Diet.DietName" class="text-danger"></span>
 							</div>
 							<div class="form-group">
 								<label asp-for="Diet.Quantity_kg" class="control-label"></label>
-								<input asp-for="Diet.Quantity_kg" class="form-control" type="number" />
+								<input asp-for="Diet.Quantity_kg" class="form-control" type="number" placeholder="Insert the quantity here" />
 								<span asp-validation-for="Diet.Quantity_kg" class="text-danger"></span>
 							</div>
 						</div>
@@ -106,12 +105,12 @@
 						<div class="modal-body">
 							<div class="form-group">
 								<label asp-for="Bedding.BeddingName" class="control-label"></label>
-								<input asp-for="Bedding.BeddingName" class="form-control" />
+								<input asp-for="Bedding.BeddingName" class="form-control" placeholder="Insert the name here" />
 								<span asp-validation-for="Bedding.BeddingName" class="text-danger"></span>
 							</div>
 							<div class="form-group">
 								<label asp-for="Bedding.Quantity_kg" class="control-label"></label>
-								<input asp-for="Bedding.Quantity_kg" class="form-control" type="number" />
+								<input asp-for="Bedding.Quantity_kg" class="form-control" type="number" placeholder="Insert the quantity here" />
 								<span asp-validation-for="Bedding.Quantity_kg" class="text-danger"></span>
 							</div>
 						</div>
@@ -134,12 +133,12 @@
 						<div class="modal-body">
 							<div class="form-group">
 								<label asp-for="Toy.ToyName" class="control-label"></label>
-								<input asp-for="Toy.ToyName" class="form-control" />
+								<input asp-for="Toy.ToyName" class="form-control" placeholder="Insert the name here" />
 								<span asp-validation-for="Toy.ToyName" class="text-danger"></span>
 							</div>
 							<div class="form-group">
 								<label asp-for="Toy.Quantity" class="control-label"></label>
-								<input asp-for="Toy.Quantity" class="form-control" type="number" />
+								<input asp-for="Toy.Quantity" class="form-control" type="number" placeholder="Insert the quantity here" />
 								<span asp-validation-for="Toy.Quantity" class="text-danger"></span>
 							</div>
 						</div>
@@ -163,12 +162,12 @@
 						<div class="modal-body">
 							<div class="form-group">
 								<label asp-for="Accessory.AccessoryName" class="control-label"></label>
-								<input asp-for="Accessory.AccessoryName" class="form-control" />
+								<input asp-for="Accessory.AccessoryName" class="form-control" placeholder="Insert the name here" />
 								<span asp-validation-for="Accessory.AccessoryName" class="text-danger"></span>
 							</div>
 							<div class="form-group">
 								<label asp-for="Accessory.Quantity" class="control-label"></label>
-								<input asp-for="Accessory.Quantity" class="form-control" type="number" />
+								<input asp-for="Accessory.Quantity" class="form-control" type="number" placeholder="Insert the quantity here" />
 								<span asp-validation-for="Accessory.Quantity" class="text-danger"></span>
 							</div>
 						</div>

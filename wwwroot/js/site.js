@@ -23,31 +23,29 @@ function openType(event, typeName) {
 
     tablinks = document.getElementsByClassName("tablinks");
     for (i = 0; i < tablinks.length; i++) {
-        tablinks[i].className = tablinks[i].className.replace("active", "");
-
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
     }
 
     document.getElementById(typeName).style.display = "block";
-    event.currentTarget.className += "active";
+    event.currentTarget.className += " active";
 }
 
-function cloneRow(rowsId) {
-    var row = document.getElementById(rowsId).firstElementChild;
-    var clone = row.cloneNode(true);
-
-    clone.prepend(document.createElement("hr"));
-
-    let deleteButton = document.createElement('button');
-    deleteButton.classList.add('btn', 'btn-danger', 'deleteBtn');
-    deleteButton.textContent = "Delete";
-    deleteButton.addEventListener('click', deleteRow);
-    clone.appendChild(deleteButton);
-
-    document.querySelector('input').value = "";
-    document.getElementById(rowsId).appendChild(clone);
-
-    function deleteRow() {
-        document.getElementById(rowsId).removeChild(clone);
+const scroller = document.querySelector("#scroller");
+const container = document.querySelector(".container");
+scroller.style.visibility = "hidden";
+container.addEventListener("scroll", e => {
+    if (container.scrollTop > 10) {
+        scroller.style.visibility = "visible";
     }
-};
+    else {
+        scroller.style.visibility = "hidden";
+    }
+    
+});
 
+scroller.addEventListener("click", function () {
+    container.scrollTo({
+        top: 0,
+    left: 0
+    });
+});

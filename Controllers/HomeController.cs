@@ -31,13 +31,20 @@ namespace ShelterHelper.Controllers
 				animals = await response.Content.ReadAsAsync<IEnumerable<Animal>>();
 			}
 
-			ViewBag.AnimalsSortParm = sortOrder == "Species" ? "species_desc" : "Species";
+			ViewBag.ChipNumberParam = sortOrder == "ChipNumber" ? "chip_number_desc" : "ChipNumber";
+			ViewBag.AnimalsSortParam = sortOrder == "Species" ? "species_desc" : "Species";
 			ViewBag.SexParam = sortOrder == "Sex" ? "sex_desc" : "Sex";
 			ViewBag.AdmissionParam = sortOrder == "AdmissionDate" ? "admission_date_desc" : "AdmissionDate";
 			ViewBag.AdoptionParam = sortOrder == "AdoptionDate" ? "adoption_date_desc" : "AdoptionDate";
 			ViewBag.EmployeeParam = sortOrder == "Employee" ? "employee_desc" : "Employee";
 			switch(sortOrder)
 			{
+				case "ChipNumber":
+					animals = animals.OrderBy(a => a.ChipNumber);
+					break;
+				case "chip_number_desc":
+					animals=animals.OrderByDescending(a => a.ChipNumber);
+					break;
 				case "Species":
 					animals = animals.OrderBy(a => a.Species.SpeciesName);
 					break;
@@ -63,10 +70,10 @@ namespace ShelterHelper.Controllers
 					animals = animals.OrderByDescending(a => a.AdoptionDay);
 					break;
 				case "Employee":
-					animals = animals.OrderBy(a => a.EmployeeId);
+					animals = animals.OrderBy(a => a.Employee.EmployeePersonalId);
 					break;
 				case "employee_desc":
-					animals = animals.OrderByDescending(a=>a.EmployeeId);
+					animals = animals.OrderByDescending(a=>a.Employee.EmployeePersonalId);
 					break;
 				default:
 					animals = animals.OrderBy(a => a.Name);
@@ -109,13 +116,14 @@ namespace ShelterHelper.Controllers
 
             var animal = new Models.Animal()
             {
-                SpeciesId = animalViewModel.SpeciesId,
-                Name = animalViewModel.Name,
-                Sex = animalViewModel.Sex,
-                Weight = animalViewModel.Weight,
-                AdmissionDay = animalViewModel.AdmissionDay,
-				Health = animalViewModel.Health,
-				EmployeeId = animalViewModel.EmployeeId
+                SpeciesId = animalViewModel.Animal.SpeciesId,
+				ChipNumber = animalViewModel.Animal.ChipNumber,
+                Name = animalViewModel.Animal.Name,
+                Sex = animalViewModel.Animal.Sex,
+                Weight = animalViewModel.Animal.Weight,
+                AdmissionDay = animalViewModel.Animal.AdmissionDay,
+				Health = animalViewModel.Animal.Health,
+				EmployeeId = animalViewModel.Animal.EmployeeId
             };
 
             animal.AdoptionDay = new DateOnly(1900, 1, 1);

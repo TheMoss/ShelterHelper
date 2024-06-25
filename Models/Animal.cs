@@ -4,15 +4,22 @@ namespace ShelterHelper.Models
 {
     public class Animal
     {
+        [Key]
         public int? Id { get; set; }
-
-        [Required]
-        public string Species { get; set; }
+		[Required(ErrorMessage = "This field is required")]
+		[Display(Name = "Species")]
+		public int SpeciesId { get; set; }
+        public virtual Species? Species { get; set; }
+        [Display(Name = "Chip number")]
+        //[Length(minimumLength: 8, maximumLength: 8)]
+        [Range(10000000, 99999999)]
+        public int ChipNumber { get; set; }
 
         [Required]
         [StringLength(30, MinimumLength = 3)]
         public string Name { get; set; }
 
+        [Required]
         public string Sex { get; set; }
 
         [Required]
@@ -30,9 +37,10 @@ namespace ShelterHelper.Models
         [Required]
         public string Health { get; set; }
 
-        [Required]
-        [Display(Name = "Employee ID")]        
+        public virtual Employee? Employee { get; set; }
         public int EmployeeId { get; set; }
+        public int EmployeePersonalId {  get; set; }
+        
     }
 
 }

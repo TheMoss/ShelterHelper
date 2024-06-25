@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ShelterHelper.Models;
 using ShelterHelper.ViewModels;
+using ShelterHelperAPI.Models;
 using System.Diagnostics;
 using X.PagedList;
 
@@ -22,13 +23,13 @@ namespace ShelterHelper.Controllers
 		public async Task<ActionResult> Index(int? page, string sortOrder)
 		{
 			ViewBag.CurrentAnimalSortOrder = sortOrder;
-			IEnumerable<Animal> animals = null;
+			IEnumerable<Models.Animal> animals = null;
 			var httpClient = _httpClientFactory.CreateClient("Client");
 			HttpResponseMessage response = await httpClient.GetAsync("https://localhost:7147/api/Animals");
 			
 			if (response.IsSuccessStatusCode)
 			{
-				animals = await response.Content.ReadAsAsync<IEnumerable<Animal>>();
+				animals = await response.Content.ReadAsAsync<IEnumerable<Models.Animal>>();
 			}
 
 			ViewBag.ChipNumberParam = sortOrder == "ChipNumber" ? "chip_number_desc" : "ChipNumber";
@@ -96,11 +97,11 @@ namespace ShelterHelper.Controllers
 		{
 			var httpClient = _httpClientFactory.CreateClient("Client");
 			HttpResponseMessage response = await httpClient.GetAsync("https://localhost:7147/api/Species");
-			IEnumerable<Species> species = null;
+			IEnumerable<Models.Species> species = null;
 			var viewModel = new AnimalViewModel();
 			if (response.IsSuccessStatusCode)
 			{				
-				species = await response.Content.ReadAsAsync<IEnumerable<Species>>();
+				species = await response.Content.ReadAsAsync<IEnumerable<Models.Species>>();
 
 				viewModel.SpeciesList = species.ToList();
 			}
@@ -140,12 +141,12 @@ namespace ShelterHelper.Controllers
 		public async Task<ActionResult> Edit(int? id)
 		{
 			var httpClient = _httpClientFactory.CreateClient("Client");
-			Animal animal = null;
+            Models.Animal animal = null;
 			if (id == null) { return NotFound(); }
 			HttpResponseMessage response = await httpClient.GetAsync($"https://localhost:7147/api/Animals/{id}");
 			if (response.IsSuccessStatusCode)
 			{
-				animal = await response.Content.ReadAsAsync<Animal>();
+				animal = await response.Content.ReadAsAsync<Models.Animal>();
 			}
 
 			if (animal == null) { return NotFound(); }
@@ -156,12 +157,12 @@ namespace ShelterHelper.Controllers
 		public async Task<ActionResult> Delete(int? id)
 		{
 			var httpClient = _httpClientFactory.CreateClient("Client");
-			Animal animal = null;
+			Models.Animal animal = null;
 			if (id == null) { return NotFound(); }
 			HttpResponseMessage response = await httpClient.GetAsync($"https://localhost:7147/api/Animals/{id}");
 			if (response.IsSuccessStatusCode)
 			{  
-				animal = await response.Content.ReadAsAsync<Animal> ();
+				animal = await response.Content.ReadAsAsync<Models.Animal> ();
 			}
 
 			if (animal == null) { return NotFound (); }
@@ -182,5 +183,25 @@ namespace ShelterHelper.Controllers
 
 			return RedirectToAction("Index");
 		}
+		public async Task<ActionResult> Adopt(int? id)
+	{
+			var httpClient = _httpClientFactory.CreateClient("Client");
+			AdoptionViewModel animalViewModel = new AdoptionViewModel();
+			if (id == null) { return NotFound(); }
+			HttpResponseMessage response = await httpClient.GetAsync($"https://localhost:7147/api/Animals/{id}");
+			if (response.IsSuccessStatusCode)
+			{
+				Models.Animal animal = await response.Content.ReadAsAsync<Models.Animal>();
+				animalViewModel.Animal = animal;
+				//get toy and accessory
+			}
+
+			if (animalViewModel == null) { return NotFound(); }
+
+
+			return View(animalViewModel);
 	}
+	}
+
+	
 }

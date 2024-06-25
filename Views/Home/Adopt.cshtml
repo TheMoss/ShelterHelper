@@ -1,0 +1,52 @@
+﻿@model ShelterHelper.ViewModels.AdoptionViewModel
+@{
+	ViewData["Title"] = "Adoption";
+}
+<h1>Adoption</h1>
+<hr />
+<div class="row">
+	<div class="col-md-4">
+		<form>
+
+			<div>
+				<label asp-for="Animal.ChipNumber" class="control-label"></label>
+				<input asp-for="Animal.ChipNumber" class="form-control" />
+			</div>
+
+			<div>
+				<label asp-for="Animal.Name" class="control-label"></label>
+				<input id="animal-name" asp-for="Animal.Name" class="form-control" />
+			</div>
+
+			<div>
+				<label asp-for="Owner.OwnerName" class="control-label"></label>
+				<input asp-for="Owner.OwnerName" class="form-control" />
+			</div>
+			
+			<div>
+				<label asp-for="Owner.Email" class="control-label"></label>
+				<input asp-for="Owner.Email" class="form-control" />
+			</div>
+			<div>
+				<label asp-for="EmployeeId" class="control-label"></label>
+				<input asp-for="EmployeeId" class="form-control" />
+			</div>
+			<p>Prepare the following items:</p>
+			<div>
+				<input type="checkbox" title="toy" />
+				<label>@Model.Animal.Species.Toy.ToyName</label>
+
+				<input type="checkbox" title="accessory" />
+				<label>@Model.Animal.Species.Accessory.AccessoryName</label>
+			</div>
+
+			<div class="form-group">
+				<label asp-for="Animal.AdoptionDay" class="control-label"></label>
+				<input id=adoption-day-input asp-for="Animal.AdoptionDay" class="form-control" value="" />
+				<span asp-validation-for="Animal.AdoptionDay" class="text-danger"></span>
+			</div>
+			</form>
+
+
+	</div>
+</div>

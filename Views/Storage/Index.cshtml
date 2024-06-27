@@ -8,6 +8,19 @@
 }
 
 <h1>Warehouse</h1>
+@if (TempData["Success"] != null)
+{
+    <div class="result-success temp-message">
+        <p>@TempData["Success"].ToString()</p>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="result-error temp-message">
+        <p>@TempData["Error"].ToString()</p>
+    </div>
+}
 
 <span>
     <a asp-action="Create">Create new species</a>
@@ -43,4 +56,5 @@
     </tbody>
 </table>
 <br/>
+
 @Html.PagedListPager((pagedList), page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSortOrder}))

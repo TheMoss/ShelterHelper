@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using ShelterHelper.ViewModels;
 using X.PagedList;
-using Newtonsoft.Json;
-using ShelterHelper.Models;
-using Microsoft.EntityFrameworkCore;
-using Npgsql;
 
 namespace ShelterHelper.Controllers
 {
@@ -22,7 +19,7 @@ namespace ShelterHelper.Controllers
 			ViewBag.CurrentStorageSortOrder = sortOrder;
 			IEnumerable<ShelterHelper.Models.Species> species = null;
 			var httpClient = _httpClientFactory.CreateClient("Client");
-			HttpResponseMessage response = await httpClient.GetAsync("https://localhost:7147/api/Species");
+			HttpResponseMessage response = await httpClient.GetAsync("https://localhost:7147/api/species");
 			if (response.IsSuccessStatusCode)
 			{
 				species = await response.Content.ReadAsAsync<IEnumerable<Models.Species>>();
@@ -56,29 +53,39 @@ namespace ShelterHelper.Controllers
 
 		public async Task<ActionResult> AddResources()
 		{
-			return View();
+			var httpClient = _httpClientFactory.CreateClient("Client");
+			HttpResponseMessage response = await httpClient.GetAsync("https://localhost:7147/api/resources");
+			var viewModel = new SpeciesViewModel();
+			if (response.IsSuccessStatusCode)
+			{
+				string content = await response.Content.ReadAsStringAsync();
+				viewModel = JsonConvert.DeserializeObject<SpeciesViewModel>(content);
+			}
+
+			return View(viewModel);
 		}
+		
 
 		// GET: StorageController/Create
 		public async Task<ActionResult> Create()
 		{
 			var httpClient = _httpClientFactory.CreateClient("Client");
-			HttpResponseMessage response = await httpClient.GetAsync("https://localhost:7147/api/Storage");
-			var viewModel = new CreateSpeciesViewModel();
+			HttpResponseMessage response = await httpClient.GetAsync("https://localhost:7147/api/resources");
+			var viewModel = new SpeciesViewModel();
 			if (response.IsSuccessStatusCode)
 			{
 				string content = await response.Content.ReadAsStringAsync();
-				viewModel = JsonConvert.DeserializeObject<CreateSpeciesViewModel>(content);
-			}		
+				viewModel = JsonConvert.DeserializeObject<SpeciesViewModel>(content);
+			}
 			
 			return View(viewModel);
 		}
 		// POST: StorageController/Diet
 		[HttpPost]
-		public async Task<ActionResult> CreateNewDiet(CreateSpeciesViewModel viewModel)
+		public async Task<ActionResult> CreateNewDiet(SpeciesViewModel viewModel)
 		{
 			var httpClient = _httpClientFactory.CreateClient("Client");
-			var diet = new Diet()
+			var diet = new Models.Diet()
 			{
 				DietName = viewModel.Diet.DietName,
 				Quantity_kg = viewModel.Diet.Quantity_kg
@@ -87,19 +94,22 @@ namespace ShelterHelper.Controllers
 			if (ModelState.IsValid)
 			{
 				//check if entry exists or create a new one
-				HttpResponseMessage response = await httpClient.PostAsJsonAsync($"https://localhost:7147/api/Storage/Diet", diet);
+				HttpResponseMessage response = await httpClient.PostAsJsonAsync($"https://localhost:7147/api/resources/diets", diet);
 				response.EnsureSuccessStatusCode();
-				TempData["Message"] = "Operation successful";
-				return RedirectToAction("Index");
-			}
-			return RedirectToAction("Create");
+                TempData["Success"] = "Success, new diet type added.";
+            }
+            else
+            {
+                TempData["Error"] = "Error, something went wrong.";
+            }
+            return RedirectToAction("Create");
 		}
 		// POST: StorageController/Bedding
 		[HttpPost]
-		public async Task<ActionResult> CreateNewBedding(CreateSpeciesViewModel viewModel)
+		public async Task<ActionResult> CreateNewBedding(SpeciesViewModel viewModel)
 		{
 			var httpClient = _httpClientFactory.CreateClient("Client");
-			var bedding = new Bedding()
+			var bedding = new Models.Bedding()
 			{
 				BeddingName = viewModel.Bedding.BeddingName,
 				Quantity_kg = viewModel.Bedding.Quantity_kg
@@ -108,19 +118,22 @@ namespace ShelterHelper.Controllers
 			if (ModelState.IsValid)
 			{
 				//check if entry exists or create a new one
-				HttpResponseMessage response = await httpClient.PostAsJsonAsync($"https://localhost:7147/api/Storage/Bedding", bedding);
+				HttpResponseMessage response = await httpClient.PostAsJsonAsync($"https://localhost:7147/api/resources/beddings", bedding);
 				response.EnsureSuccessStatusCode();
-				TempData["Message"] = "Operation successful";
-				return RedirectToAction("Index");
-			}
-			return RedirectToAction("Create");
+                TempData["Success"] = "Success, new bedding type added.";
+            }
+            else
+            {
+                TempData["Error"] = "Error, something went wrong.";
+            }
+            return RedirectToAction("Create");
 		}
 		// POST: StorageController/Toy
 		[HttpPost]
-		public async Task<ActionResult> CreateNewToy(CreateSpeciesViewModel viewModel)
+		public async Task<ActionResult> CreateNewToy(SpeciesViewModel viewModel)
 		{
 			var httpClient = _httpClientFactory.CreateClient("Client");
-			var toy = new Toy()
+			var toy = new Models.Toy()
 			{
 				ToyName = viewModel.Toy.ToyName,
 				Quantity = viewModel.Toy.Quantity
@@ -129,19 +142,22 @@ namespace ShelterHelper.Controllers
 			if (ModelState.IsValid)
 			{
 				//check if entry exists or create a new one
-				HttpResponseMessage response = await httpClient.PostAsJsonAsync($"https://localhost:7147/api/Storage/Toy", toy);
+				HttpResponseMessage response = await httpClient.PostAsJsonAsync($"https://localhost:7147/api/resources/toys", toy);
 				response.EnsureSuccessStatusCode();
-				TempData["Message"] = "Operation successful";
-				return RedirectToAction("Index");
-			}
-			return RedirectToAction("Create");
+                TempData["Success"] = "Success, new toy type added.";
+            }
+            else
+            {
+                TempData["Error"] = "Error, something went wrong.";
+            }
+            return RedirectToAction("Create");
 		}
 		// POST: StorageController/Accessory
 		[HttpPost]
-		public async Task<ActionResult> CreateNewAccessory(CreateSpeciesViewModel viewModel)
+		public async Task<ActionResult> CreateNewAccessory(SpeciesViewModel viewModel)
 		{
 			var httpClient = _httpClientFactory.CreateClient("Client");
-			var accessory = new Accessory()
+			var accessory = new Models.Accessory()
 			{
 				AccessoryName = viewModel.Accessory.AccessoryName,
 				Quantity = viewModel.Accessory.Quantity
@@ -150,18 +166,21 @@ namespace ShelterHelper.Controllers
 			if (ModelState.IsValid)
 			{
 				//check if entry exists or create a new one
-				HttpResponseMessage response = await httpClient.PostAsJsonAsync($"https://localhost:7147/api/Storage/Accessory", accessory);
+				HttpResponseMessage response = await httpClient.PostAsJsonAsync($"https://localhost:7147/api/resources/accessories", accessory);
 				response.EnsureSuccessStatusCode();
-				TempData["Message"] = "Operation successful";
-				return RedirectToAction("Index");
-			}
-			return RedirectToAction("Create");
+                TempData["Success"] = "Success, new accessory type added.";
+            }
+            else
+            {
+                TempData["Error"] = "Error, something went wrong.";
+            }
+            return RedirectToAction("Create");
 		}
 
 		// POST: StorageController/Create
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<ActionResult> Create(CreateSpeciesViewModel viewModel)
+		public async Task<ActionResult> Create(SpeciesViewModel viewModel)
 		{ //id as value
 			var httpClient = _httpClientFactory.CreateClient("Client");
 			var species = new Models.Species()
@@ -178,8 +197,9 @@ namespace ShelterHelper.Controllers
 			{
 				try
 				{
-					HttpResponseMessage response = await httpClient.PostAsJsonAsync($"https://localhost:7147/api/Species", species);
+					HttpResponseMessage response = await httpClient.PostAsJsonAsync($"https://localhost:7147/api/species", species);
                     response.EnsureSuccessStatusCode();
+                    TempData["Success"] = "Success, database updated.";
                 }
 				catch (HttpRequestException ex)
 				{
@@ -231,6 +251,7 @@ namespace ShelterHelper.Controllers
 			{
 				return View();
 			}
-		}
+		}	
+		
 	}
 }

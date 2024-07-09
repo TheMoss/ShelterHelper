@@ -7,7 +7,7 @@ using X.PagedList;
 
 namespace ShelterHelper.Controllers
 {
-    public class HomeController : Controller
+	public class HomeController : Controller
 	{
 		private readonly ILogger<HomeController> _logger;		
 		private readonly IHttpClientFactory _httpClientFactory;
@@ -20,16 +20,29 @@ namespace ShelterHelper.Controllers
 
 		}
 
-		public async Task<ActionResult> Index(int? page, string sortOrder)
+		public async Task<ActionResult> Index(int? page, string sortOrder, string searchString, string filterBy)
 		{
 			ViewBag.CurrentAnimalSortOrder = sortOrder;
 			IEnumerable<Models.Animal> animals = null;
 			var httpClient = _httpClientFactory.CreateClient("Client");
-			HttpResponseMessage response = await httpClient.GetAsync("https://localhost:7147/api/Animals");
+			HttpResponseMessage response = await httpClient.GetAsync("https://localhost:7147/api/animals");
 			
 			if (response.IsSuccessStatusCode)
 			{
 				animals = await response.Content.ReadAsAsync<IEnumerable<Models.Animal>>();
+			}
+			if (!String.IsNullOrEmpty(searchString))
+			{
+				switch (filterBy)
+				{
+					case "name":
+						animals = animals.Where(name => name.Name.ToString().Contains(searchString));
+						break;					
+					case "chipNumber":
+						animals = animals.Where(chipNumber => chipNumber.ChipNumber.ToString().Contains(searchString));
+						break;
+				}
+				
 			}
 
 			ViewBag.ChipNumberParam = sortOrder == "ChipNumber" ? "chip_number_desc" : "ChipNumber";
@@ -83,6 +96,8 @@ namespace ShelterHelper.Controllers
 			var pageNumber = page ?? 1;
 			var pagedList = animals.ToPagedList(pageNumber, 10);
 			ViewBag.AnimalsPagedList = pagedList;
+
+			
 			return View(animals);
 		}
 
@@ -96,7 +111,7 @@ namespace ShelterHelper.Controllers
 		public async Task<ActionResult> Create()
 		{
 			var httpClient = _httpClientFactory.CreateClient("Client");
-			HttpResponseMessage response = await httpClient.GetAsync("https://localhost:7147/api/Species");
+			HttpResponseMessage response = await httpClient.GetAsync("https://localhost:7147/api/species");
 			IEnumerable<Models.Species> species = null;
 			var viewModel = new AnimalViewModel();
 			if (response.IsSuccessStatusCode)
@@ -104,8 +119,9 @@ namespace ShelterHelper.Controllers
 				species = await response.Content.ReadAsAsync<IEnumerable<Models.Species>>();
 
 				viewModel.SpeciesList = species.ToList();
+				
 			}
-
+			
 			return View(viewModel);
 		}
 
@@ -130,27 +146,53 @@ namespace ShelterHelper.Controllers
             animal.AdoptionDay = new DateOnly(1900, 1, 1);
 			if (ModelState.IsValid)
 			{					
-				HttpResponseMessage response = await httpClient.PostAsJsonAsync($"https://localhost:7147/api/Animals", animal);
+				HttpResponseMessage response = await httpClient.PostAsJsonAsync($"https://localhost:7147/api/animals", animal);
 				response.EnsureSuccessStatusCode();
+				TempData["Success"] = "New animal added to the database.";
 				return RedirectToAction("Index");
 			}
-
+			else
+			{
+				TempData["Error"] = "Failed to add a new record to the database.";
+			}
 			return View(animal);
 		}
 
+		
 		public async Task<ActionResult> Edit(int? id)
 		{
 			var httpClient = _httpClientFactory.CreateClient("Client");
             Models.Animal animal = null;
 			if (id == null) { return NotFound(); }
-			HttpResponseMessage response = await httpClient.GetAsync($"https://localhost:7147/api/Animals/{id}");
+
+			HttpResponseMessage response = await httpClient.GetAsync($"https://localhost:7147/api/animals/{id}");
 			if (response.IsSuccessStatusCode)
 			{
 				animal = await response.Content.ReadAsAsync<Models.Animal>();
+				
 			}
 
 			if (animal == null) { return NotFound(); }
 
+			return View(animal);
+		}
+
+		[HttpPost]
+		public async Task<ActionResult> Edit(int id, [Bind("Id, SpeciesId, Name, ChipNumber, Sex, Weight, AdmissionDay, AdoptionDay, Health, EmployeeId")] Models.Animal animal)
+		{
+			var httpClient = _httpClientFactory.CreateClient("Client");
+			if (id == null) { return NotFound(); }
+			if(ModelState.IsValid)
+			{
+				HttpResponseMessage response = await httpClient.PostAsJsonAsync($"https://localhost:7147/api/animals", animal);
+				response.EnsureSuccessStatusCode();
+				TempData["Success"] = "Edited succesfully.";
+				return RedirectToAction("Index");
+			}
+			else
+			{
+				TempData["Error"] = "Failed to edit.";
+			}
 			return View(animal);
 		}
 		
@@ -179,6 +221,7 @@ namespace ShelterHelper.Controllers
 			if (response.IsSuccessStatusCode)
 			{
 				await httpClient.DeleteAsync($"https://localhost:7147/api/Animals/{id}");
+				TempData["Success"] = "Deleted succesfully.";
 			}
 
 			return RedirectToAction("Index");
@@ -193,7 +236,6 @@ namespace ShelterHelper.Controllers
 			{
 				Models.Animal animal = await response.Content.ReadAsAsync<Models.Animal>();
 				animalViewModel.Animal = animal;
-				//get toy and accessory
 			}
 
 			if (animalViewModel == null) { return NotFound(); }
@@ -201,6 +243,22 @@ namespace ShelterHelper.Controllers
 
 			return View(animalViewModel);
 	}
+		
+		[HttpPost, ActionName("Adopt")]
+
+		public async Task<ActionResult> AdoptConfirmed(int id, AdoptionViewModel adoption)
+		{
+			var httpClient = _httpClientFactory.CreateClient("Client");
+			if (adoption.Animal.Id == null) { return NotFound(); }
+			if (ModelState.IsValid)
+			{	
+
+				TempData["Success"] = "Model valid.";
+				return RedirectToAction("Index");
+			}
+
+			return View(adoption);
+		}
 	}
 
 	

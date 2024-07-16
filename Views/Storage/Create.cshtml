@@ -1,4 +1,4 @@
-﻿@model ShelterHelper.ViewModels.CreateSpeciesViewModel;
+﻿@model ShelterHelper.ViewModels.SpeciesViewModel;
 @{
 	ViewData["Title"] = "Create";
 }
@@ -185,6 +185,19 @@
 <div>
 	<a asp-action="Index">Back to List</a>
 </div>
+@if (TempData["Success"] != null)
+{
+	<div class="result-success temp-message">
+		<p>@TempData["Success"].ToString()</p>
+	</div>
+}
+
+@if (TempData["Error"] != null)
+{
+	<div class="result-error temp-message">
+		<p>@TempData["Error"].ToString()</p>
+	</div>
+}
 @section Scripts {
 	@{
 		await Html.RenderPartialAsync("_ValidationScriptsPartial");

@@ -7,55 +7,94 @@
 }
 
 <div class="contents">
-	
-	<h1>Animals</h1>
 
+	<h1>Animals</h1>
+	<hr />
 	<p>
 		<a asp-controller="Home" asp-action="Create">Add a new animal</a>
 	</p>
-		<table class="table">
-			<thead>
+	<form asp-controller="Home" asp-action="Index" id="filteringForm">
+
+		<label for="filterBy">Filter by:</label>
+		<select name="filterBy" id="filterBy" class="form-control" style="width:15%;">			
+			<option value="chipNumber" selected>Chip number</option>
+			<option value="name">Name</option>
+		</select>
+
+		<label for="searchString">Search:</label>
+		<input type="text" name="searchString" id="searchString" placeholder="Insert a value here" class="form-control" style="width:15%" />
+		<input type="submit" value="Filter"/>
+	</form>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>@Html.ActionLink("Chip number", "Index", new { sortOrder = ViewBag.ChipNumberParam })</th>
+				<th>@Html.DisplayNameFor(model => model.Name)</th>
+				<th>@Html.ActionLink("Species", "Index", new { sortOrder = ViewBag.AnimalsSortParam })</th>
+				<th>@Html.ActionLink("Sex", "Index", new { sortOrder = ViewBag.SexParam })</th>
+				<th>@Html.DisplayNameFor(model => model.Weight)</th>
+				<th>@Html.ActionLink("Admission day", "Index", new { sortOrder = ViewBag.AdmissionParam })</th>
+				<th>@Html.ActionLink("Adoption day", "Index", new { sortOrder = ViewBag.AdoptionParam })</th>
+				<th>@Html.DisplayNameFor(model => model.Health)</th>
+				<th>@Html.ActionLink("Employee ID", "Index", new { sortOrder = ViewBag.EmployeeParam })</th>
+			</tr>
+		</thead>
+
+		<tbody>
+			@foreach (var animal in ViewBag.AnimalsPagedList)
+			{
 				<tr>
-
-					<th>@Html.DisplayNameFor(model => model.Name)</th>
-					<th>@Html.ActionLink("Species", "Index", new { sortOrder = ViewBag.AnimalsSortParm })</th>
-					<th>@Html.ActionLink("Sex", "Index", new { sortOrder = ViewBag.SexParam })</th>
-					<th>@Html.DisplayNameFor(model => model.Weight)</th>
-					<th>@Html.ActionLink("Admission day", "Index", new { sortOrder = ViewBag.AdmissionParam })</th>
-					<th>@Html.ActionLink("Adoption day", "Index", new { sortOrder = ViewBag.AdoptionParam })</th>
-					<th>@Html.DisplayNameFor(model => model.Health)</th>
-					<th>@Html.ActionLink("Employee ID", "Index", new { sortOrder = ViewBag.EmployeeParam })</th>
+					<td>@animal.ChipNumber</td>
+					<td>@animal.Name</td>
+					<td>@animal.Species.SpeciesName</td>
+					<td>@animal.Sex</td>
+					<td>@animal.Weight</td>
+					<td>@animal.AdmissionDay</td>
+					<td>
+						@if (animal.OwnerId == null)
+						{
+							@("Not adopted yet")
+						}
+						else
+						{
+							@animal.AdoptionDay
+						}
+					</td>
+					<td>@animal.Health</td>
+					<td>@animal.Employee.EmployeePersonalId</td>
+					<td>
+						@if(animal.OwnerId == null)
+						{
+							<a asp-action="Adopt" asp-route-id="@animal.Id" style="padding-right:4px">Adopt</a> <span>|</span>
+						}
+						else
+						{
+							<a asp-action="Details" asp-route-id="@animal.Id">Details</a> <span>|</span>
+						}
+						<a asp-action="Edit" asp-route-id="@animal.Id">Edit</a> |
+						<a asp-action="Delete" asp-route-id="@animal.Id">Delete</a>
+					</td>
 				</tr>
-			</thead>
+			}
+		</tbody>
+	</table>
+	@if(pagedList.PageCount > 1)
+	{
+		@Html.PagedListPager((pagedList), page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentAnimalSortOrder }))
+	}
+	
+</div>
 
-			<tbody>
-				@foreach (var animal in ViewBag.AnimalsPagedList)
-				{
-					<tr>
-						<td>@animal.Name</td>
-						<td>@animal.Species.SpeciesName</td>
-						<td>@animal.Sex</td>
-						<td>@animal.Weight</td>
-						<td>@animal.AdmissionDay</td>
-						<td>
-							@if (animal.AdoptionDay.Equals(new DateOnly(1900, 1, 1)))
-							{
-								@("Not adopted yet")
-							}
-							else
-							{
-								@animal.AdoptionDay
-							}
-						</td>
-						<td>@animal.Health</td>
-						<td>@animal.EmployeeId</td>
-						<td>
-							<a asp-action="Edit" asp-route-id="@animal.Id">Edit</a> |
-							<a asp-action="Delete" asp-route-id="@animal.Id">Delete</a>
-						</td>
-					</tr>
-				}
-			</tbody>
-		</table>
-	@Html.PagedListPager((pagedList), page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentAnimalSortOrder }))
+@if (TempData["Success"] != null)
+{
+	<div class="result-success temp-message">
+		<p>@TempData["Success"].ToString()</p>
 	</div>
+}
+
+@if (TempData["Error"] != null)
+{
+	<div class="result-error temp-message">
+		<p>@TempData["Error"].ToString()</p>
+	</div>
+}

@@ -1,10 +1,11 @@
-﻿@model ShelterHelper.ViewModels.CreateSpeciesViewModel;
+﻿@model ShelterHelper.ViewModels.SpeciesViewModel;
 @{
 	ViewData["Title"] = "Add resources";
 }
 
 
 <h1>Add resources</h1>
+<h4>Received shipment</h4>
 <hr />
 
 <div class="tabs">
@@ -21,15 +22,18 @@
 			<ul class="add-resources-table">
 				@foreach (var item in Model.DietsList)
 				{
-					<li value=@item.DietId>
-						@item.DietName
-						<!--quantity to be added-->
-						<div>
-							<input asp-for="Diet.Quantity_kg" class="form-control" type="number" placeholder="Insert the quantity here" />
-							<span asp-validation-for="Diet.Quantity_kg" class="text-danger"></span>
-						</div>
-						<button type="submit" value="Submit" class="btn btn-primary">Submit</button>
+
+					<li>
+						<form onsubmit="submitAddResources(event, @item.DietId, 'diet')">
+							<p>@item.DietName</p>
+							<div>
+								<input required min=1 class="form-control" type="number" placeholder="Insert the quantity here" />
+								<span class="text-danger"></span>
+							</div>
+							<button type="submit" value="Submit" class="btn btn-primary">Submit</button>
+						</form>
 					</li>
+
 				}
 			</ul>
 		</div>
@@ -42,14 +46,16 @@
 			<ul class="add-resources-table">
 				@foreach (var item in Model.BeddingsList)
 				{
-					<li value=@item.BeddingId>
-						@item.BeddingName
-						<!--quantity to be added-->
-						<div>
-							<input asp-for="Bedding.Quantity_kg" class="form-control" type="number" placeholder="Insert the quantity here" />
-							<span asp-validation-for="Bedding.Quantity_kg" class="text-danger"></span>
-						</div>
-						<button type="submit" value="Submit" class="btn btn-primary">Submit</button>
+
+					<li>
+						<form onsubmit="submitAddResources(event, @item.BeddingId)">
+							<p>@item.BeddingName</p>
+							<div>
+								<input required min=1 class="form-control" type="number" placeholder="Insert the quantity here" />
+								<span class="text-danger"></span>
+							</div>
+							<button type="submit" value="Submit" class="btn btn-primary">Submit</button>
+						</form>
 					</li>
 				}
 			</ul>
@@ -63,14 +69,16 @@
 			<ul class="add-resources-table">
 				@foreach (var item in Model.ToysList)
 				{
+
 					<li value=@item.ToyId>
-						@item.ToyName
-						<!--quantity to be added-->
-						<div>
-							<input asp-for="Toy.Quantity" class="form-control" type="number" placeholder="Insert the quantity here" />
-							<span asp-validation-for="Toy.Quantity" class="text-danger"></span>
-						</div>
-						<button type="submit" value="Submit" class="btn btn-primary">Submit</button>
+						<form>
+							<p>@item.ToyName</p>
+							<div>
+								<input required min=1 class="form-control" type="number" placeholder="Insert the quantity here" />
+								<span class="text-danger"></span>
+							</div>
+							<button type="submit" value="Submit" class="btn btn-primary">Submit</button>
+						</form>
 					</li>
 				}
 			</ul>
@@ -78,25 +86,27 @@
 	</div>
 </div>
 
-<div id="Accessory" class="tabcontent">	
+<div id="Accessory" class="tabcontent">
 	<div class="col-md-4">
 		<div>
 			<ul class="add-resources-table">
 				@foreach (var item in Model.AccessoriesList)
 				{
 					<li value=@item.AccessoryId>
-						@item.AccessoryName
-						<!--quantity to be added-->
-						<div>
-							<input asp-for="Accessory.Quantity" class="form-control" type="number" placeholder="Insert the quantity here" />
-							<span asp-validation-for="Accessory.Quantity" class="text-danger"></span>
-						</div>
-						<button type="submit" value="Submit" class="btn btn-primary">Submit</button>
+						<form>
+							<p>@item.AccessoryName</p>
+							<div>
+								<input required min=1 class="form-control" type="number" placeholder="Insert the quantity here" />
+								<span class="text-danger"></span>
+							</div>
+							<button type="submit" value="Submit" class="btn btn-primary">Submit</button>
+						</form>
 					</li>
 				}
 			</ul>
 		</div>
+
 	</div>
 </div>
 
-				<button id="scroller">Scroll to top</button>
+<button type="button" id="scroller">Scroll to top</button>

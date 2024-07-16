@@ -6,13 +6,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddHttpClient("Client", httpClient =>
+builder.Services.AddHttpClient("ShelterHelperAPI", httpClient =>
 {
 	httpClient.BaseAddress = new Uri("https://localhost:7147/");
 	httpClient.DefaultRequestHeaders.Accept.Clear();
 	httpClient.DefaultRequestHeaders.Accept.Add(
 		new MediaTypeWithQualityHeaderValue("application/json"));
 });
+
 
 var app = builder.Build();
 

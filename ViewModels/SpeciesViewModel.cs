@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 namespace ShelterHelper.ViewModels
 {
-    public class CreateSpeciesViewModel
+    public class SpeciesViewModel
     {
         public Species? Species { get; set; }
 

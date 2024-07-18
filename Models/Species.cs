@@ -9,7 +9,7 @@ namespace ShelterHelper.Models
 		public int? SpeciesId { get; set; }
 
         [Display(Name = "Species"), StringLength(20, MinimumLength = 3)]		
-		public string SpeciesName { get; set; }
+		public string? SpeciesName { get; set; }
 
 		public int DietId { get; set; }		
 		public virtual Diet? Diet { get; set; }
@@ -33,7 +33,7 @@ namespace ShelterHelper.Models
         [Display(Name = "Diet"), StringLength(20, MinimumLength = 3)]
         public string DietName { get; set; }
 
-        [Display(Name = "Quantity")]
+        [Display(Name = "Quantity"), Range(0, Int32.MaxValue, ErrorMessage = "Only positive number allowed")]
         public int Quantity_kg { get; set; }
 	}
 
@@ -45,7 +45,7 @@ namespace ShelterHelper.Models
         [Display(Name = "Bedding"), StringLength(20, MinimumLength = 3)]
 		public string BeddingName { get; set; }
 
-        [Display(Name = "Quantity"), Range(1, Int32.MaxValue)]		
+        [Display(Name = "Quantity"), Range(0, Int32.MaxValue, ErrorMessage = "Only positive number allowed")]		
         public int Quantity_kg { get; set; }
 	}
 
@@ -57,7 +57,7 @@ namespace ShelterHelper.Models
         [Display(Name = "Toy"), StringLength(20, MinimumLength = 3)]
 		public string ToyName { get; set; }
 
-        [Display(Name = "Quantity")]
+        [Display(Name = "Quantity"), Range(0, Int32.MaxValue, ErrorMessage = "Only positive number allowed")]
         public int Quantity { get; set; }
 	}
 
@@ -69,7 +69,7 @@ namespace ShelterHelper.Models
         [Display(Name = "Accessory"), StringLength(20, MinimumLength = 3)]
 		public string AccessoryName { get; set; }
 
-        [Display(Name = "Quantity")]
+        [Display(Name = "Quantity"), Range(0, Int32.MaxValue, ErrorMessage = "Only positive number allowed")]
         public int Quantity { get; set; }
 	}
 }

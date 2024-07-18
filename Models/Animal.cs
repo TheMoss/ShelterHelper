@@ -7,8 +7,8 @@ namespace ShelterHelper.Models
 		[Key]
 		public int? Id { get; set; }
 
-		[Display(Name = "Species"), Required(ErrorMessage = "This field is required")]
-		public int SpeciesId { get; set; }
+		[Display(Name = "Species")]
+		public int? SpeciesId { get; set; }
 
 		public virtual Species? Species { get; set; }
 
@@ -21,7 +21,8 @@ namespace ShelterHelper.Models
 		public string? Sex { get; set; }
 
 		[Required]
-		public int Weight { get; set; }
+        [Range(1, 5000, ErrorMessage = "Only positive number allowed")]
+        public int Weight { get; set; }
 
 		[DataType(DataType.Date), Display(Name = "Admission day"), Required]
 		public DateOnly AdmissionDay { get; set; }
@@ -29,6 +30,7 @@ namespace ShelterHelper.Models
 		[DataType(DataType.Date), Display(Name = "Adoption day")]
 		public DateOnly? AdoptionDay { get; set; }
 
+		[StringLength(300)]
 		public string? Health { get; set; }
 
 		public virtual Employee? Employee { get; set; }

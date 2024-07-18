@@ -19,13 +19,14 @@ namespace ShelterHelper.Controllers
 			_httpClientFactory = httpClientFactory;
 
 		}
-
-		public async Task<ActionResult> Index(int? page, string sortOrder, string searchString, string filterBy)
+        
+		// GET: HomeController
+        public async Task<IActionResult> Index(int? page, string sortOrder, string searchString, string filterBy)
 		{
 			ViewBag.CurrentAnimalSortOrder = sortOrder;
 			IEnumerable<Models.Animal> animals = null;
-			var httpClient = _httpClientFactory.CreateClient("Client");
-			HttpResponseMessage response = await httpClient.GetAsync("https://localhost:7147/api/animals");
+			var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
+			HttpResponseMessage response = await httpClient.GetAsync("api/animals");
 			
 			if (response.IsSuccessStatusCode)
 			{
@@ -103,33 +104,34 @@ namespace ShelterHelper.Controllers
 
 
 		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-		public ActionResult Error()
+		public IActionResult Error()
 		{
 			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 		}
-
-		public async Task<ActionResult> Create()
+        // GET: HomeController/Create
+        public async Task<IActionResult> Create()
 		{
-			var httpClient = _httpClientFactory.CreateClient("Client");
-			HttpResponseMessage response = await httpClient.GetAsync("https://localhost:7147/api/species");
+			var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
+			HttpResponseMessage response = await httpClient.GetAsync("api/species");
 			IEnumerable<Models.Species> species = null;
 			var viewModel = new AnimalViewModel();
 			if (response.IsSuccessStatusCode)
 			{				
 				species = await response.Content.ReadAsAsync<IEnumerable<Models.Species>>();
 
-				viewModel.SpeciesList = species.ToList();
-				
+				viewModel.SpeciesList = species.ToList();				
 			}
 			
 			return View(viewModel);
 		}
 
+		//POST : HomeController/Create
 		[HttpPost, ActionName("Create")]
 		[ValidateAntiForgeryToken]
-		public async Task<ActionResult> CreateConfirmed(AnimalViewModel animalViewModel)
+		public async Task<IActionResult> CreateConfirmed(AnimalViewModel animalViewModel)
 		{
-			var httpClient = _httpClientFactory.CreateClient("Client");
+			
+			var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
 
             var animal = new Models.Animal()
             {
@@ -146,7 +148,7 @@ namespace ShelterHelper.Controllers
             animal.AdoptionDay = new DateOnly(1900, 1, 1);
 			if (ModelState.IsValid)
 			{					
-				HttpResponseMessage response = await httpClient.PostAsJsonAsync($"https://localhost:7147/api/animals", animal);
+				HttpResponseMessage response = await httpClient.PostAsJsonAsync("api/animals", animal);
 				response.EnsureSuccessStatusCode();
 				TempData["Success"] = "New animal added to the database.";
 				return RedirectToAction("Index");
@@ -158,14 +160,14 @@ namespace ShelterHelper.Controllers
 			return View(animal);
 		}
 
-		
-		public async Task<ActionResult> Edit(int? id)
+		//GET: HomeController/Edit/1
+		public async Task<IActionResult> Edit(int? id)
 		{
-			var httpClient = _httpClientFactory.CreateClient("Client");
+			var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
             Models.Animal animal = null;
 			if (id == null) { return NotFound(); }
 
-			HttpResponseMessage response = await httpClient.GetAsync($"https://localhost:7147/api/animals/{id}");
+			HttpResponseMessage response = await httpClient.GetAsync($"api/animals/{id}");
 			if (response.IsSuccessStatusCode)
 			{
 				animal = await response.Content.ReadAsAsync<Models.Animal>();
@@ -177,14 +179,15 @@ namespace ShelterHelper.Controllers
 			return View(animal);
 		}
 
-		[HttpPost]
-		public async Task<ActionResult> Edit(int id, [Bind("Id, SpeciesId, Name, ChipNumber, Sex, Weight, AdmissionDay, AdoptionDay, Health, EmployeeId")] Models.Animal animal)
+        //POST: HomeController/Edit/1
+        [HttpPost, ValidateAntiForgeryToken]		
+		public async Task<IActionResult> Edit(int id, [Bind("Id, SpeciesId, Name, ChipNumber, Sex, Weight, AdmissionDay, AdoptionDay, Health, EmployeeId")] Models.Animal animal)
 		{
-			var httpClient = _httpClientFactory.CreateClient("Client");
+			var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
 			if (id == null) { return NotFound(); }
 			if(ModelState.IsValid)
 			{
-				HttpResponseMessage response = await httpClient.PostAsJsonAsync($"https://localhost:7147/api/animals", animal);
+				HttpResponseMessage response = await httpClient.PostAsJsonAsync("api/animals", animal);
 				response.EnsureSuccessStatusCode();
 				TempData["Success"] = "Edited succesfully.";
 				return RedirectToAction("Index");
@@ -196,12 +199,13 @@ namespace ShelterHelper.Controllers
 			return View(animal);
 		}
 		
-		public async Task<ActionResult> Delete(int? id)
+		//GET : HomeController/Delete/1 
+		public async Task<IActionResult> Delete(int? id)
 		{
-			var httpClient = _httpClientFactory.CreateClient("Client");
+			var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
 			Models.Animal animal = null;
 			if (id == null) { return NotFound(); }
-			HttpResponseMessage response = await httpClient.GetAsync($"https://localhost:7147/api/Animals/{id}");
+			HttpResponseMessage response = await httpClient.GetAsync($"api/Animals/{id}");
 			if (response.IsSuccessStatusCode)
 			{  
 				animal = await response.Content.ReadAsAsync<Models.Animal> ();
@@ -211,27 +215,30 @@ namespace ShelterHelper.Controllers
 			return View(animal);
 		}
 
-		[HttpPost, ActionName("Delete")]
-		public async Task<ActionResult> DeleteConfirmed(int? id)
+        //POST : HomeController/Delete/1 
+        [HttpPost, ActionName("Delete")]
+		public async Task<IActionResult> DeleteConfirmed(int? id)
 		{
 			if (id == null) { return NotFound(); }
-			var httpClient = _httpClientFactory.CreateClient("Client");
-			HttpResponseMessage response = await httpClient.GetAsync($"https://localhost:7147/api/Animals/{id}");
+			var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
+			HttpResponseMessage response = await httpClient.GetAsync($"api/Animals/{id}");
 
 			if (response.IsSuccessStatusCode)
 			{
-				await httpClient.DeleteAsync($"https://localhost:7147/api/Animals/{id}");
+				await httpClient.DeleteAsync($"api/Animals/{id}");
 				TempData["Success"] = "Deleted succesfully.";
 			}
 
 			return RedirectToAction("Index");
 		}
-		public async Task<ActionResult> Adopt(int? id)
+
+		//GET : HomeController/Adopt/1
+		public async Task<IActionResult> Adopt(int? id)
 	{
-			var httpClient = _httpClientFactory.CreateClient("Client");
+			var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
 			AdoptionViewModel animalViewModel = new AdoptionViewModel();
 			if (id == null) { return NotFound(); }
-			HttpResponseMessage response = await httpClient.GetAsync($"https://localhost:7147/api/Animals/{id}");
+			HttpResponseMessage response = await httpClient.GetAsync($"api/Animals/{id}");
 			if (response.IsSuccessStatusCode)
 			{
 				Models.Animal animal = await response.Content.ReadAsAsync<Models.Animal>();
@@ -243,15 +250,32 @@ namespace ShelterHelper.Controllers
 
 			return View(animalViewModel);
 	}
-		
-		[HttpPost, ActionName("Adopt")]
 
-		public async Task<ActionResult> AdoptConfirmed(int id, AdoptionViewModel adoption)
+        //PATCH : HomeController/Adopt/1
+        [HttpPatch, ActionName("Adopt")]
+		public async Task<ActionResult> AdoptConfirmed(int animalId, AdoptionViewModel adoption)
 		{
-			var httpClient = _httpClientFactory.CreateClient("Client");
+			var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
 			if (adoption.Animal.Id == null) { return NotFound(); }
 			if (ModelState.IsValid)
-			{	
+			{
+				var owner = new Models.Owner {					
+				OwnerName = adoption.Owner.OwnerName,
+				Address = adoption.Owner.Address,
+				Email = adoption.Owner.Email
+				};
+				HttpResponseMessage response = await httpClient.PostAsJsonAsync("api/owners", owner);
+				response.EnsureSuccessStatusCode();
+				
+				var adoptionDate = adoption.Animal.AdoptionDay;				
+				
+				var allOwners = await httpClient.GetAsync($"https://localhost:7147/api/owners");
+				var ownersList = await allOwners.Content.ReadAsAsync<IEnumerable<Models.Owner>>();
+				
+				int? newOwnerId = ownersList.FirstOrDefault(owner => owner.OwnerName == adoption.Owner.OwnerName && owner.Address == adoption.Owner.Address).OwnerId;
+				
+				string patchDocument = "patch";
+				HttpResponseMessage patchAdoptionDateAndOwner = await httpClient.PatchAsJsonAsync($"api/animal/{animalId}", patchDocument );
 
 				TempData["Success"] = "Model valid.";
 				return RedirectToAction("Index");

@@ -1,10 +1,7 @@
-﻿@model IEnumerable<ShelterHelper.Models.Species>
-@using X.PagedList.Mvc.Core;
-@using X.PagedList;
+﻿@model ShelterHelper.ViewModels.SpeciesViewModel;
 @{    
     ViewData["Title"] = "Index";
-    ViewBag.Title = "Warehouse resources";
-    var pagedList = (IPagedList)ViewBag.PagedList;    
+    ViewBag.Title = "Warehouse resources";       
 }
 
 <h1>Warehouse</h1>
@@ -23,39 +20,95 @@
     </div>
 }
 
-<span>
-    <a asp-action="Create">Create new species</a>
+<span>    
     <a asp-action="AddResources">Add resources</a>
 </span> 
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>@Html.ActionLink("Species", "Index", new {sortOrder = ViewBag.StorageSortParm})</th>
-            <th>@Html.DisplayNameFor(model => model.Diet.DietName)</th>
-            <th>@Html.DisplayNameFor(model => model.Bedding.BeddingName)</th>
-            <th>@Html.DisplayNameFor(model => model.Toy.ToyName)</th>
-            <th>@Html.DisplayNameFor(model => model.Accessory.AccessoryName)</th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var product in ViewBag.PagedList) 
-    {
-        <tr>
-            <td>@product.SpeciesName</td>
-            <td>@product.Diet.DietName, @product.Diet.Quantity_kg kg </td>
-            <td>@product.Bedding.BeddingName, @product.Bedding.Quantity_kg kg</td>
-            <td>@product.Toy.ToyName, @product.Toy.Quantity pcs</td>
-            <td>@product.Accessory.AccessoryName, @product.Accessory.Quantity pcs</td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@product.SpeciesName">Edit</a> |
-                <a asp-action="Details" asp-route-id="@product.SpeciesName">Details</a> |
-                <a asp-action="Delete" asp-route-id="@product.SpeciesName">Delete</a>
-            </td>
-        </tr>
-    }
-    </tbody>
-</table>
-<br/>
+<div class="resources-container">
+    <table class="table" style="grid-column: 1">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in Model.AccessoriesList.OrderBy(a => a.AccessoryName))
+            {
+                <tr>
+                    <td>@product.AccessoryName</td>
+                    <td>@product.Quantity</td>
+                    <td>
+                        <a asp-action="EditAccessory" asp-route-id ="@product.AccessoryId" >Edit</a> |
+                        <a asp-action="Delete">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 
-@Html.PagedListPager((pagedList), page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSortOrder}))
+    <table class="table" style="grid-column: 2">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in Model.BeddingsList.OrderBy(a => a.BeddingName))
+            {
+                <tr>
+                    <td>@product.BeddingName</td>
+                    <td>@product.Quantity_kg kg</td>
+                    <td>
+                        <a asp-action="EditBedding" asp-route-id="@product.BeddingId">Edit</a> |
+                        <a asp-action="Delete">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <table class="table" style="grid-column: 3">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in Model.DietsList.OrderBy(a => a.DietName))
+            {
+                <tr>
+                    <td>@product.DietName</td>
+                    <td>@product.Quantity_kg kg</td>
+                    <td>
+                        <a asp-action="EditDiet" asp-route-id="@product.DietId">Edit</a> |
+                        <a asp-action="Delete">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <table class="table" style="grid-column: 4">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in Model.ToysList.OrderBy(a => a.ToyName))
+            {
+                <tr>
+                    <td>@product.ToyName</td>
+                    <td>@product.Quantity</td>
+                    <td>
+                        <a asp-action="EditToy" asp-route-id="@product.ToyId">Edit</a> |
+                        <a asp-action="Delete">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+   

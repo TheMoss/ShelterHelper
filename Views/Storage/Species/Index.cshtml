@@ -1,0 +1,60 @@
+﻿@model IEnumerable<ShelterHelper.Models.Species>
+@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@{
+    ViewData["Title"] = "Index";
+    ViewBag.Title = "Registered species";
+    var pagedList = (IPagedList)ViewBag.PagedList;
+}
+
+<h1>Species</h1>
+<hr />
+@if (TempData["Success"] != null)
+{
+    <div class="result-success temp-message">
+        <p>@TempData["Success"].ToString()</p>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="result-error temp-message">
+        <p>@TempData["Error"].ToString()</p>
+    </div>
+}
+
+<span>
+    <a asp-action="Create">Create new species</a>
+</span>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.ActionLink("Species", "Index", new { sortOrder = ViewBag.StorageSortParm })</th>
+            <th>@Html.DisplayNameFor(model => model.Diet.DietName)</th>
+            <th>@Html.DisplayNameFor(model => model.Bedding.BeddingName)</th>
+            <th>@Html.DisplayNameFor(model => model.Toy.ToyName)</th>
+            <th>@Html.DisplayNameFor(model => model.Accessory.AccessoryName)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in ViewBag.PagedList)
+        {
+            <tr>
+                <td>@product.SpeciesName</td>
+                <td>@product.Diet.DietName, @product.Diet.Quantity_kg kg </td>
+                <td>@product.Bedding.BeddingName, @product.Bedding.Quantity_kg kg</td>
+                <td>@product.Toy.ToyName, @product.Toy.Quantity pcs</td>
+                <td>@product.Accessory.AccessoryName, @product.Accessory.Quantity pcs</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@product.SpeciesId">Edit</a> |
+                    <a asp-action="Delete" asp-route-id="@product.SpeciesId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<br />
+
+@Html.PagedListPager((pagedList), page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSortOrder }))

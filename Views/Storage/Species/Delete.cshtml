@@ -1,0 +1,51 @@
+﻿@model ShelterHelper.Models.Species
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Delete</h1>
+
+   
+    <hr />
+    <dl class="row">
+         <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.SpeciesName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.SpeciesName)
+        </dd>
+         <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Accessory)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Accessory.AccessoryName)
+        </dd>
+         <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Bedding)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Bedding.BeddingName)
+        </dd>
+         <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Diet)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Diet.DietName)
+        </dd>
+         <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Toy)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Toy.ToyName)
+        </dd>
+    </dl>
+    
+    <form asp-action="ConfirmDelete">
+        <input type="hidden" asp-for="SpeciesId" />
+        <input type="submit" value="Delete" class="btn btn-danger" />         
+    </form>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

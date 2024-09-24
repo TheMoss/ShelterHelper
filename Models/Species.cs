@@ -11,16 +11,16 @@ namespace ShelterHelper.Models
         [Display(Name = "Species"), StringLength(20, MinimumLength = 3)]		
 		public string? SpeciesName { get; set; }
 
-		public int DietId { get; set; }		
+		public int? DietId { get; set; }		
 		public virtual Diet? Diet { get; set; }
 
-		public int BeddingId { get; set; }		
+		public int? BeddingId { get; set; }		
 		public virtual Bedding? Bedding { get; set; }
 
-		public int ToyId { get; set; }		
+		public int? ToyId { get; set; }		
 		public virtual Toy? Toy { get; set; }
 
-		public int AccessoryId { get; set; }		
+		public int? AccessoryId { get; set; }		
 		public virtual Accessory? Accessory { get; set; }
 	}
 

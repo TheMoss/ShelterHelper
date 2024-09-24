@@ -6,19 +6,6 @@
 
 <h1>Warehouse</h1>
 <hr />
-@if (TempData["Success"] != null)
-{
-    <div class="result-success temp-message">
-        <p>@TempData["Success"].ToString()</p>
-    </div>
-}
-
-@if (TempData["Error"] != null)
-{
-    <div class="result-error temp-message">
-        <p>@TempData["Error"].ToString()</p>
-    </div>
-}
 
 <span>    
     <a asp-action="AddResources">Add resources</a>
@@ -40,7 +27,7 @@
                     <td>@product.Quantity</td>
                     <td>
                         <a asp-action="EditAccessory" asp-route-id ="@product.AccessoryId" >Edit</a> |
-                        <a asp-action="Delete">Delete</a>
+                        <a asp-action="DeleteAccessory" asp-route-id="@product.AccessoryId">Delete</a>
                     </td>
                 </tr>
             }
@@ -62,7 +49,7 @@
                     <td>@product.Quantity_kg kg</td>
                     <td>
                         <a asp-action="EditBedding" asp-route-id="@product.BeddingId">Edit</a> |
-                        <a asp-action="Delete">Delete</a>
+                        <a asp-action="DeleteBedding" asp-route-id="@product.BeddingId">Delete</a>
                     </td>
                 </tr>
             }
@@ -83,7 +70,7 @@
                     <td>@product.Quantity_kg kg</td>
                     <td>
                         <a asp-action="EditDiet" asp-route-id="@product.DietId">Edit</a> |
-                        <a asp-action="Delete">Delete</a>
+                        <a asp-action="DeleteDiet" asp-route-id="@product.DietId">Delete</a>
                     </td>
                 </tr>
             }
@@ -104,11 +91,24 @@
                     <td>@product.Quantity</td>
                     <td>
                         <a asp-action="EditToy" asp-route-id="@product.ToyId">Edit</a> |
-                        <a asp-action="Delete">Delete</a>
+                        <a asp-action="DeleteToy" asp-route-id="@product.ToyId">Delete</a>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 </div>
-   
+@if (TempData["Success"] != null)
+{
+    <div class="result-success temp-message">
+        <p>@TempData["Success"].ToString()</p>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="result-error temp-message">
+        <p>@TempData["Error"].ToString()</p>
+    </div>
+}
+

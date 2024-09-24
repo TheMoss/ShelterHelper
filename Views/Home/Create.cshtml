@@ -1,76 +1,87 @@
-﻿@model ShelterHelper.Models.Animal
+﻿@model ShelterHelper.ViewModels.AnimalViewModel
 
 @{
-    ViewData["Title"] = "Create";
+	ViewData["Title"] = "Create";
 }
 
 <h1>Create</h1>
-
-<h4>Animal</h4>
+<h4>Add a new animal</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Species" class="control-label"></label>
-                <input asp-for="Species" class="form-control" />
-                <span asp-validation-for="Species" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Sex" class="control-label"></label>
-				<!-- <input asp-for="Sex" class="form-control" />-->
-                <span asp-validation-for="Sex" class="text-danger"></span>
-                <div class="form-group">
-                    @Html.DropDownListFor(model => model.Sex, new List<SelectListItem>
-                    {
-                    new SelectListItem() {Text = "Unknown", Value="Unknown"},
-                    new SelectListItem() {Text = "Spayed female", Value="Spayed female"},
-                    new SelectListItem() {Text = "Intact female", Value="Intact female"},
-                    new SelectListItem() {Text = "Spayed male", Value="Spayed male"},
-                    new SelectListItem() {Text = "Intact male", Value="Intact male"}
-                    })                    
+
+<div class="row">	
+	<div class="col-md-4">		
+		<form asp-action="Create">
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+			<div>
+				<label asp-for="Animal.SpeciesId" class="control-label"></label>
+				<select asp-for="Animal.SpeciesId" asp-items="new SelectList(Model.SpeciesList, nameof(Species.SpeciesId), nameof(Species.SpeciesName))" class="form-control">
+					<option disabled selected hidden>Select option</option>
+				</select>
+				<span asp-validation-for="Animal.SpeciesId" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="Animal.ChipNumber" class="control-label"></label>
+				<input asp-for="Animal.ChipNumber" class="form-control" id="chip-number-input" />
+				<span asp-validation-for="Animal.ChipNumber" class="text-danger"></span>
+				<button type="button" onclick="generateChipNumber()">generate id number</button>
+			</div>
+			<div class="form-group">
+				<label asp-for="Animal.Name" class="control-label"></label>
+				<input asp-for="Animal.Name" class="form-control" placeholder="Insert the animal's name here" />
+				<span asp-validation-for="Animal.Name" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="Animal.Sex" class="control-label"></label>
+				<div class="form-group">
+					<select asp-for="Animal.Sex" class="form-control">
+						<option value="" disabled selected hidden>Select option</option>
+						<option value="Unknown">Unknown</option>
+						<option value="Spayed female">Spayed female</option>
+						<option value="Intact female">Intact female</option>
+						<option value="Spayed male">Spayed male</option>
+						<option value="Intact male">Intact male</option>
+					</select>
 				</div>
-                       
-               
-            </div>
-            <div class="form-group">
-                <label asp-for="Weight" class="control-label"></label>
-                <input asp-for="Weight" class="form-control" />
-                <span asp-validation-for="Weight" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AdmissionDay" class="control-label"></label>
-                <input asp-for="AdmissionDay" class="form-control" />
-                <span asp-validation-for="AdmissionDay" class="text-danger"></span>
-            </div>
-            
-            <div class="form-group">
-                <label asp-for="Health" class="control-label"></label>
-                <input asp-for="Health" class="form-control" />
-                <span asp-validation-for="Health" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EmployeeId" class="control-label"></label>
-                <input asp-for="EmployeeId" class="form-control" min="10000" max="99999" />
-                <span asp-validation-for="EmployeeId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
+				<span asp-validation-for="Animal.Sex" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="Animal.Weight" class="control-label"></label>
+				<input asp-for="Animal.Weight" class="form-control" value="" placeholder="Insert weight here" />
+				<span asp-validation-for="Animal.Weight" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="Animal.AdmissionDay" class="control-label"></label>
+				<input asp-for="Animal.AdmissionDay" class="form-control" value="" />
+				<span asp-validation-for="Animal.AdmissionDay" class="text-danger"></span>
+			</div>
+
+			<div class="form-group">
+				<label asp-for="Animal.Health" class="control-label"></label>
+				<input asp-for="Animal.Health" class="form-control" placeholder="Insert health notes here" />
+				<span asp-validation-for="Animal.Health" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="Animal.EmployeeId" class="control-label"></label>
+				<input asp-for="Animal.EmployeeId" class="form-control" value="" type="number" placeholder="Insert your ID here" />
+				<span asp-validation-for="Animal.EmployeeId" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<input type="submit" value="Create" class="btn btn-primary" />
+			</div>
+		</form>
+	</div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+	<a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+	<script>
+		window.onload(generateChipNumber());
+	</script>
+
 }

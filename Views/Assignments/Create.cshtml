@@ -1,0 +1,56 @@
+@model Assignment
+
+@{
+	var prioritiesList = new SelectList(new List<SelectListItem>
+{
+new SelectListItem {Text = "Low", Value = "0"},
+new SelectListItem { Text= "Medium", Value = "1"},
+new SelectListItem{ Text = "High", Value = "2"},
+new SelectListItem{ Text = "Very high", Value = "3"}
+}, "Value", "Text");
+
+}
+
+<div>
+	<div class="row">
+		<div class="col-md-4">
+			<form method="post" asp-action="Create">
+				<div>
+					<h4>Create a new assignment</h4>
+				</div>
+				<div class="col-md-4">
+					<div class="form-group">
+						<label asp-for="Title" class="control-label"></label>
+						<input asp-for="Title" class="form-control" placeholder="Insert the title here"/>
+						<span asp-validation-for="Title" class="text-danger"></span>
+					</div>
+					<div class="form-group">
+						<label asp-for="Description" class="control-label"></label>
+						<input asp-for="Description" class="form-control" placeholder="Insert the description here"/>
+						<span asp-validation-for="Description" class="text-danger"></span>
+					</div>
+					<div class="form-group">
+						<label asp-for="Priority" class="control-label"></label>
+						@Html.DropDownList("PrioritiesList", prioritiesList, "Select priority level", new { @class = "form-control" })
+						<span asp-validation-for="Priority" class="text-danger"></span>
+					</div>
+					<div class="form-group">
+						<label asp-for="CreatorId" class="control-label"></label>
+						<input asp-for="CreatorId" class="form-control" type="number" placeholder="Insert your ID here"/>
+						<span asp-validation-for="CreatorId" class="text-danger"></span>
+					</div>
+					<div class="form-group">
+						<label asp-for="CreationDate" class="control-label"></label>
+						<input asp-for="CreationDate" class="form-control" type="datetime" placeholder="Insert the title here"/>
+						<span asp-validation-for="CreationDate" class="text-danger"></span>
+					</div>
+				</div>
+
+				<div class="modal-footer">
+					<input type="submit" value="Create" class="btn btn-primary"/>
+					<button type="reset" class="btn btn-secondary" data-dismiss="modal" id="closeAccessoryModal" onclick="closeModal(document.getElementById('accessoryModal'))">Cancel</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>

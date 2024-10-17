@@ -1,0 +1,101 @@
+﻿@model IEnumerable<ShelterHelper.Models.Assignment>
+
+
+@*adding editing deleting in one window*@
+@{
+	ViewData["Title"] = "Assignments";
+	ViewBag.TodoList = new List<Assignment>
+	{
+		new Assignment { Title = "Example", Description = "Example description", Priority = 0, CreatorId = 12345 },
+		new Assignment { Title = "Another example", Description = "Another example description", Priority = 1, CreatorId = 23456 }
+	};
+
+	ViewBag.DoingList = new List<Assignment>
+	{
+		new Assignment { Title = "Example", Description = "Example description", Priority = 0, CreatorId = 12345 },
+		new Assignment { Title = "Another example", Description = "Another example description", Priority = 1, CreatorId = 23456 }
+	};
+
+	ViewBag.DoneList = new List<Assignment>
+	{
+		new Assignment { Title = "Example", Description = "Example description", Priority = 0, CreatorId = 12345 },
+		new Assignment { Title = "Another example", Description = "Another example description", Priority = 1, CreatorId = 34567 }
+	};
+}
+
+<div class="contents">
+	<h1>Assignments</h1>
+	<hr/>
+	<span>
+		<a asp-action="Create">Add a new assignment</a>
+		</span>
+
+	<div class="board">
+		<ol style="display: grid; grid-template-columns: 1fr 1fr 1fr">
+			<li class="table" style="grid-column: 1;margin-right: 20px;width: auto">
+				<div>
+					<h4>TO DO</h4>
+					<hr/>
+					<div>
+						<ol>
+							@foreach (var todo in Model.Where(a => a is { IsInProgress: false, IsCompleted: false }).OrderByDescending(a => a.Priority))
+							{
+								<li class = "todo-item">
+									<a>
+										@todo.Title
+									</a>
+									<div>
+										@todo.Description
+									</div>
+									<span ><button>Start</button>
+										<button>Edit</button></span>
+								</li>
+							}
+						</ol>
+					</div>
+
+				</div>
+			</li>
+			<li class="table" style="grid-column: 2; margin-right: 20px;width: auto">
+				<div>
+					<h4>DOING</h4>
+					<hr/>
+					<div>
+						<ol>
+							@foreach (var doing in Model.Where(a => a is { IsInProgress: true, IsCompleted: false }).OrderByDescending(a => a.Priority))
+							{
+								<li class = "todo-item">
+									<a>
+										@doing.Title
+									</a>
+									<span><button>Complete</button>
+									<button>Edit</button></span>
+								</li>
+							}
+						</ol>
+					</div>
+
+				</div>
+			</li>
+			<li class="table" style="grid-column: 3;margin-right: 20px;width: auto">
+				<div>
+					<h4>DONE</h4>
+					<hr/>
+					<div>
+						<ol>
+							@foreach (var done in Model.Where(a => a is { IsInProgress: false, IsCompleted: true }).OrderByDescending(a => a.Priority))
+							{
+								<li class = "todo-item">
+									<a>
+										@done.Title
+									</a>
+									<button>Edit</button>
+								</li>
+							}
+						</ol>
+					</div>
+				</div>
+			</li>
+		</ol>
+	</div>
+	</div>

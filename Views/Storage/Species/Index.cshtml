@@ -43,10 +43,10 @@
         {
             <tr>
                 <td>@product.SpeciesName</td>
-                <td>@product.Diet.DietName, @product.Diet.Quantity_kg kg </td>
-                <td>@product.Bedding.BeddingName, @product.Bedding.Quantity_kg kg</td>
-                <td>@product.Toy.ToyName, @product.Toy.Quantity pcs</td>
-                <td>@product.Accessory.AccessoryName, @product.Accessory.Quantity pcs</td>
+                <td>@product.Diet.DietName</td>
+                <td>@product.Bedding.BeddingName</td>
+                <td>@product.Toy.ToyName</td>
+                <td>@product.Accessory.AccessoryName</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@product.SpeciesId">Edit</a> |
                     <a asp-action="Delete" asp-route-id="@product.SpeciesId">Delete</a>

@@ -1,5 +1,4 @@
 ﻿using ShelterHelper.Models;
-using System.ComponentModel.DataAnnotations;
 
 namespace ShelterHelper.ViewModels
 {

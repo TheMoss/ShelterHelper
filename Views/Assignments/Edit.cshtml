@@ -1,0 +1,81 @@
+@model Assignment;
+
+@{
+	ViewData["Title"] = "Edit";
+	var prioritiesList = new SelectList(new List<SelectListItem>
+{
+new SelectListItem {Text = "Low", Value = "0"},
+new SelectListItem { Text= "Medium", Value = "1"},
+new SelectListItem{ Text = "High", Value = "2"},
+new SelectListItem{ Text = "Very high", Value = "3"}
+}, "Value", "Text");
+
+}
+
+<h1>Edit</h1>
+
+<hr />
+<div class="row">
+	<div class="col-md-4">
+		<form asp-action="Edit" method="post">
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+			<input type="hidden" asp-for="AssignmentId" />
+			<div class="form-group">
+				<label asp-for="Title" class="control-label"></label>
+				<input asp-for="Title" class="form-control" />
+				<span asp-validation-for="Title" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="Description" class="control-label"></label>
+				<input asp-for="Description" class="form-control" />
+				<span asp-validation-for="Description" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="Priority" class="control-label"></label>
+				@Html.DropDownList("Priority", prioritiesList, "Select priority level", new { @class = "form-control" })
+
+				<span asp-validation-for="Priority" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="CreatorId" class="control-label"></label>
+				<input asp-for="CreatorId" class="form-control" />
+				<span asp-validation-for="CreatorId" class="text-danger"></span>				
+			</div>
+			<div class="form-group">
+				<label asp-for="CreationDate" class="control-label"></label>
+				<input asp-for="CreationDate" class="form-control" />
+				<span asp-validation-for="CreationDate" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="IsCompleted" class="control-label"></label>
+				<input type="radio" asp-for="IsCompleted" value="true" id="completedTrue"/>
+				<label for="completedTrue">Completed</label>
+				<input type="radio" asp-for="IsCompleted" value="false" id="completedFalse"/>
+				<label for="completedFalse">Not completed</label>
+				<span asp-validation-for="IsCompleted" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="IsInProgress" class="control-label"></label>
+				<input type="radio" asp-for="IsInProgress" value="true" id="inProgressTrue"/>
+				<label for="inProgressTrue">In progress</label>
+				<input type="radio" asp-for="IsInProgress" value="false" id="inProgressFalse"/>
+				<label for="inProgressFalse">Not in progress</label>
+				<span asp-validation-for="IsInProgress" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<input type="submit" value="Save changes" class="btn btn-primary" />
+			</div>
+		</form>
+	</div>
+</div>
+
+<div>
+	<a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+		
+	}
+}

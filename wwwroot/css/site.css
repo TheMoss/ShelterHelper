@@ -28,6 +28,7 @@ body {
     align-content: start;
     background-color: #121212;
     color: white;
+    overflow:hidden;
 }
 
 header {
@@ -42,7 +43,7 @@ nav {
 footer {
     grid-column: 1 /span 2;
     padding-left: 2em;
-    background-color: rgba(255,255,255,0.05);
+    background-color: rgb(31,31,31);
 }
 
 .container {
@@ -50,7 +51,6 @@ footer {
     grid-column: 2;
     padding: 20px;
     max-height:87vh;
-    overflow-y:auto;
     margin-top:4px;
 }
 
@@ -69,7 +69,7 @@ footer {
     .side-menu > ul {
         list-style: none;
         padding: 0;
-        margin: 0px 8px;
+        margin: 0 8px;
         width: 100%;
     }
 
@@ -101,10 +101,20 @@ table, .table {
     color: white;
     border-radius: 20px;
 }
-
-thead {
-    font-size: 18px;
+.resources-container{
+    display:grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
 }
+
+    .resources-container table {
+        margin-right: 20px;
+        width: auto;
+        height:max-content;
+    }
+
+        thead {
+            font-size: 18px;
+        }
 
 tbody tr {
     border: 1px solid #A3FCB6;
@@ -151,7 +161,7 @@ tr:last-of-type:hover td:last-child {
     height: 45px;
 }
 
-.form-control::placeholder {
+.form-control::placeholder{
     color: white;
     opacity: 0.5;
 }
@@ -217,14 +227,14 @@ select option {
 }
 
 .add-resources-table > li {
-    margin: 1rem 0rem;
+    margin: 1rem 0;
     font-size: 20px;
     list-style: none;
     
 }
 
 .add-resources-table p {
-    margin: 0px;
+    margin: 0;
     align-content:center;
 }
 .add-resources-table form {
@@ -239,7 +249,7 @@ select option {
 }
 .add-resources-table button {
     grid-column: 3;
-    margin: 0px;
+    margin: 0;
 }
 #scroller{
     position:fixed;
@@ -250,13 +260,13 @@ select option {
     background-color:rgb(11, 125, 11);
     border-radius:15px;
     padding: 10px 15px;
-    width:30%;    
+    width:100%;    
 }
 .result-error p{
     background-color: rgb(125,11,11);
     border-radius: 15px;
     padding: 10px 15px;
-    width: 30%;
+    width: 100%;
 }
 .temp-message {
     border-style: none;
@@ -272,5 +282,45 @@ select option {
     }
     100%{
         opacity:0;
+        display:none;
     }
+}
+
+#filteringForm > *{
+    display:inline-block;
+    height:40px;
+}
+
+.board{
+    display:flex;
+    flex-direction:row;
+    list-style:none;
+    
+}
+
+    .board ol {
+        display: flex;
+        flex-direction:column;
+        padding-left: 0;   
+       
+    }
+    .board li {
+        list-style: none;
+        padding:8px;
+    }
+    
+  .assignments-column ol{
+      height:450px;
+      overflow-y:auto;
+  }  
+    
+.todo-item{
+    border-radius: 20px;
+    border: 1px solid #A3FCB6;
+    display:flex;
+    flex-flow: column;
+    margin-bottom:10px;
+} 
+.todo-description{
+    font-size:14px;
 }

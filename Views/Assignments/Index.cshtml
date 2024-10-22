@@ -28,27 +28,27 @@
 	<hr/>
 	<span>
 		<a asp-action="Create">Add a new assignment</a>
-		</span>
+	</span>
 
 	<div class="board">
-		<ol style="display: grid; grid-template-columns: 1fr 1fr 1fr">
+		<ol style="display: grid; grid-template-columns: 1fr 1fr 1fr; max-height: 600px;">
 			<li class="table" style="grid-column: 1;margin-right: 20px;width: auto">
 				<div>
 					<h4>TO DO</h4>
 					<hr/>
-					<div>
-						<ol>
-							@foreach (var todo in Model.Where(a => a is { IsInProgress: false, IsCompleted: false }).OrderByDescending(a => a.Priority))
+					<div class="assignments-column">
+						<ol >
+							@foreach (var todo in Model.Where(a => a is { IsInProgress: false, IsCompleted: false }))
 							{
 								<li class = "todo-item">
-									<a>
+									<a >
 										@todo.Title
 									</a>
-									<div>
+									<div class="todo-description">
 										@todo.Description
 									</div>
-									<span ><button>Start</button>
-										<button>Edit</button></span>
+									<span ><a>Start</a>
+										<a asp-action="Edit" asp-route-id="@todo.AssignmentId">Edit</a></span>
 								</li>
 							}
 						</ol>
@@ -60,16 +60,19 @@
 				<div>
 					<h4>DOING</h4>
 					<hr/>
-					<div>
+					<div class="assignments-column">
 						<ol>
-							@foreach (var doing in Model.Where(a => a is { IsInProgress: true, IsCompleted: false }).OrderByDescending(a => a.Priority))
+							@foreach (var todo in Model.Where(a => a is { IsInProgress: true, IsCompleted: false }))
 							{
 								<li class = "todo-item">
-									<a>
-										@doing.Title
+									<a >
+										@todo.Title
 									</a>
-									<span><button>Complete</button>
-									<button>Edit</button></span>
+									<div class="todo-description">
+										@todo.Description
+									</div>
+									<span ><a>Complete</a>
+										<a asp-action="Edit" asp-route-id="@todo.AssignmentId">Edit</a></span>
 								</li>
 							}
 						</ol>
@@ -81,15 +84,19 @@
 				<div>
 					<h4>DONE</h4>
 					<hr/>
-					<div>
+					<div class="assignments-column">
 						<ol>
-							@foreach (var done in Model.Where(a => a is { IsInProgress: false, IsCompleted: true }).OrderByDescending(a => a.Priority))
+							@foreach (var todo in Model.Where(a => a is { IsInProgress: false, IsCompleted: true }))
 							{
 								<li class = "todo-item">
-									<a>
-										@done.Title
+									<a >
+										@todo.Title
 									</a>
-									<button>Edit</button>
+									<div class="todo-description">
+										@todo.Description
+									</div>
+									<span ><a>Delete</a>
+										<a asp-action="Edit" asp-route-id="@todo.AssignmentId">Edit</a></span>
 								</li>
 							}
 						</ol>
@@ -98,4 +105,17 @@
 			</li>
 		</ol>
 	</div>
+</div>
+@if (TempData["Success"] != null)
+{
+	<div class="result-success temp-message">
+		<p>@TempData["Success"].ToString()</p>
 	</div>
+}
+
+@if (TempData["Error"] != null)
+{
+	<div class="result-error temp-message">
+		<p>@TempData["Error"].ToString()</p>
+	</div>
+}

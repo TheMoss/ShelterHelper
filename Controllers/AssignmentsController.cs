@@ -127,24 +127,50 @@ namespace ShelterHelper.Controllers
         }
 
         // GET: AssignmentsController/Delete/5
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int? id)
         {
-            return View();
+            var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
+            var assignment = new Assignment();
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var response = await httpClient.GetAsync($"{_assignmentsEndpoint}{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                assignment = await response.Content.ReadAsAsync<Assignment>();
+            }
+
+            if (assignment == null)
+            {
+                return NotFound();
+            }
+
+            return View(assignment);
         }
 
         // POST: AssignmentsController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        [ActionName("Delete")]
+        public async Task<ActionResult> DeleteConfirmed(int? id)
         {
-            try
+            if (id == null)
             {
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
-            catch
+
+            var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
+            var response = await httpClient.GetAsync($"{_assignmentsEndpoint}{id}");
+
+            if (response.IsSuccessStatusCode)
             {
-                return View();
+                await httpClient.DeleteAsync($"{_assignmentsEndpoint}{id}");
+                TempData["Success"] = "Deleted successfully.";
+                
             }
+            return RedirectToAction("Index");
         }
     }
 }

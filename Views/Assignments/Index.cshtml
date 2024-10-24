@@ -47,8 +47,11 @@
 									<div class="todo-description">
 										@todo.Description
 									</div>
-									<span><a>Start</a>
-										<a asp-action="Edit" asp-route-id="@todo.AssignmentId">Edit</a></span>
+									<span class="assignment-controls">
+										<button onclick="moveToDoing(@todo.AssignmentId)">Start</button>
+										<a asp-action="Edit" asp-route-id="@todo.AssignmentId">Edit</a>
+										<a asp-action="Delete" asp-route-id="@todo.AssignmentId">Delete</a>
+									</span>
 								</li>
 							}
 						</ol>
@@ -70,8 +73,11 @@
 									<div class="todo-description">
 										@todo.Description
 									</div>
-									<span><a>Complete</a>
-										<a asp-action="Edit" asp-route-id="@todo.AssignmentId">Edit</a></span>
+									<span class="assignment-controls">
+										<button onclick="moveToDone(@todo.AssignmentId)">Complete</button>
+										<a asp-action="Edit" asp-route-id="@todo.AssignmentId">Edit</a>
+										<a asp-action="Delete" asp-route-id="@todo.AssignmentId">Delete</a>
+									</span>
 								</li>
 							}
 						</ol>
@@ -93,8 +99,10 @@
 									<div class="todo-description">
 										@todo.Description
 									</div>
-									<span><a>Delete</a>
-										<a asp-action="Edit" asp-route-id="@todo.AssignmentId">Edit</a></span>
+									<span class="assignment-controls">
+										<a asp-action="Edit" asp-route-id="@todo.AssignmentId">Edit</a>
+										<a asp-action="Delete" asp-route-id="@todo.AssignmentId">Delete</a>
+									</span>
 								</li>
 							}
 						</ol>

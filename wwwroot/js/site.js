@@ -118,7 +118,7 @@ async function addResourcesDiet(event, itemId, inputValue) {
         })
         .catch(error => console.error(`Error fetching data: ${error}`));
 
-    fetch(dietUrl, {
+    await fetch(dietUrl, {
         method: "PATCH",
         body: JSON.stringify([{
             "op": "replace",
@@ -126,11 +126,49 @@ async function addResourcesDiet(event, itemId, inputValue) {
             "value": updatedQuantity.toString()
         }]),
         headers: {
-            'Content-type': 'application/json'
+            'Content-type': 'application/json; charset=utf-8'
         }
     })
         .then(response => response.json())
         .then(json => console.log(json))
         .catch(error => console.error(`Error putting data: ${error}`));
 
+}
+
+async function moveToDoing(assignmentId){
+    const assignmentsUrl = `https://localhost:7147/api/assignments/${assignmentId}`;
+    await fetch(assignmentsUrl, {
+        method: "PATCH",
+        body: JSON.stringify([{
+            "op" : "replace",
+            "path" : "isInProgress",
+            "value" : "true"
+        }]),
+        headers: {
+            'Content-type': 'application/json; charset=utf-8'
+        }
+    });
+    
+    location.reload();
+}
+
+async function moveToDone(assignmentId){
+    const assignmentsUrl = `https://localhost:7147/api/assignments/${assignmentId}`;
+    await fetch(assignmentsUrl, {
+        method: "PATCH",
+        body: JSON.stringify([{
+            "op" : "replace",
+            "path" : "isInProgress",
+            "value" : "false"
+        },
+            {
+                "op" : "replace",
+                "path" : "isCompleted",
+                "value" : "true"  
+            }]),
+        headers: {
+            'Content-type': 'application/json; charset=utf-8'
+        }
+    });
+    location.reload();
 }

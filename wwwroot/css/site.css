@@ -335,3 +335,8 @@ select option {
 .todo-description {
     font-size: 14px;
 }
+
+.assignment-controls{
+    display:flex;
+    justify-content: space-between;
+}

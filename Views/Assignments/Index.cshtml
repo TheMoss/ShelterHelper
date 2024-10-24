@@ -37,23 +37,22 @@
 					<h4>TO DO</h4>
 					<hr/>
 					<div class="assignments-column">
-						<ol >
+						<ol>
 							@foreach (var todo in Model.Where(a => a is { IsInProgress: false, IsCompleted: false }))
 							{
-								<li class = "todo-item">
-									<a >
+								<li class="todo-item">
+									<a>
 										@todo.Title
 									</a>
 									<div class="todo-description">
 										@todo.Description
 									</div>
-									<span ><a>Start</a>
+									<span><a>Start</a>
 										<a asp-action="Edit" asp-route-id="@todo.AssignmentId">Edit</a></span>
 								</li>
 							}
 						</ol>
 					</div>
-
 				</div>
 			</li>
 			<li class="table" style="grid-column: 2; margin-right: 20px;width: auto">
@@ -64,20 +63,19 @@
 						<ol>
 							@foreach (var todo in Model.Where(a => a is { IsInProgress: true, IsCompleted: false }))
 							{
-								<li class = "todo-item">
-									<a >
+								<li class="todo-item">
+									<a>
 										@todo.Title
 									</a>
 									<div class="todo-description">
 										@todo.Description
 									</div>
-									<span ><a>Complete</a>
+									<span><a>Complete</a>
 										<a asp-action="Edit" asp-route-id="@todo.AssignmentId">Edit</a></span>
 								</li>
 							}
 						</ol>
 					</div>
-
 				</div>
 			</li>
 			<li class="table" style="grid-column: 3;margin-right: 20px;width: auto">
@@ -88,14 +86,14 @@
 						<ol>
 							@foreach (var todo in Model.Where(a => a is { IsInProgress: false, IsCompleted: true }))
 							{
-								<li class = "todo-item">
-									<a >
+								<li class="todo-item">
+									<a>
 										@todo.Title
 									</a>
 									<div class="todo-description">
 										@todo.Description
 									</div>
-									<span ><a>Delete</a>
+									<span><a>Delete</a>
 										<a asp-action="Edit" asp-route-id="@todo.AssignmentId">Edit</a></span>
 								</li>
 							}

@@ -9,80 +9,84 @@
 <div class="contents">
 
 	<h1>Animals</h1>
-	<hr />
+	<hr/>
 	<p>
 		<a asp-controller="Home" asp-action="Create">Add a new animal</a>
 	</p>
+	
 	<form asp-controller="Home" asp-action="Index" id="filteringForm">
 
 		<label for="filterBy">Filter by:</label>
-		<select name="filterBy" id="filterBy" class="form-control" style="width:15%;">			
+		<select name="filterBy" id="filterBy" class="form-control" style="width:15%;">
 			<option value="chipNumber" selected>Chip number</option>
 			<option value="name">Name</option>
 		</select>
 
 		<label for="searchString">Search:</label>
-		<input type="text" name="searchString" id="searchString" placeholder="Insert a value here" class="form-control" style="width:15%" />
+		<input type="text" name="searchString" id="searchString" placeholder="Insert a value here" class="form-control"
+		       style="width:15%"/>
 		<input type="submit" value="Filter"/>
 	</form>
+	
 	<table class="table">
 		<thead>
-			<tr>
-				<th>@Html.ActionLink("Chip number", "Index", new { sortOrder = ViewBag.ChipNumberParam })</th>
-				<th>@Html.DisplayNameFor(model => model.Name)</th>
-				<th>@Html.ActionLink("Species", "Index", new { sortOrder = ViewBag.AnimalsSortParam })</th>
-				<th>@Html.ActionLink("Sex", "Index", new { sortOrder = ViewBag.SexParam })</th>
-				<th>@Html.DisplayNameFor(model => model.Weight)</th>
-				<th>@Html.ActionLink("Admission day", "Index", new { sortOrder = ViewBag.AdmissionParam })</th>
-				<th>@Html.ActionLink("Adoption day", "Index", new { sortOrder = ViewBag.AdoptionParam })</th>
-				<th>@Html.DisplayNameFor(model => model.Health)</th>
-				<th>@Html.ActionLink("Employee ID", "Index", new { sortOrder = ViewBag.EmployeeParam })</th>
-			</tr>
+		<tr>
+			<th>@Html.ActionLink("Chip number", "Index", new { sortOrder = ViewBag.ChipNumberParam })</th>
+			<th>@Html.DisplayNameFor(model => model.Name)</th>
+			<th>@Html.ActionLink("Species", "Index", new { sortOrder = ViewBag.AnimalsSortParam })</th>
+			<th>@Html.ActionLink("Sex", "Index", new { sortOrder = ViewBag.SexParam })</th>
+			<th>@Html.DisplayNameFor(model => model.Weight)</th>
+			<th>@Html.ActionLink("Admission day", "Index", new { sortOrder = ViewBag.AdmissionParam })</th>
+			<th>@Html.ActionLink("Adoption day", "Index", new { sortOrder = ViewBag.AdoptionParam })</th>
+			<th>@Html.DisplayNameFor(model => model.Health)</th>
+			<th>@Html.ActionLink("Employee ID", "Index", new { sortOrder = ViewBag.EmployeeParam })</th>
+		</tr>
 		</thead>
 
 		<tbody>
-			@foreach (var animal in ViewBag.AnimalsPagedList)
-			{
-				<tr>
-					<td>@animal.ChipNumber</td>
-					<td>@animal.Name</td>
-					<td>@animal.Species.SpeciesName</td>
-					<td>@animal.Sex</td>
-					<td>@animal.Weight</td>
-					<td>@animal.AdmissionDay</td>
-					<td>
-						@if (animal.OwnerId == null)
-						{
-							@("Not adopted yet")
-						}
-						else
-						{
-							@animal.AdoptionDay
-						}
-					</td>
-					<td>@animal.Health</td>
-					<td>@animal.Employee.EmployeePersonalId</td>
-					<td>
-						@if(animal.OwnerId == null)
-						{
-							<a asp-action="Adopt" asp-route-id="@animal.Id" style="padding-right:4px">Adopt</a> <span>|</span>
-						}
-						else
-						{
-							<a asp-action="Details" asp-route-id="@animal.Id">Details</a> <span>|</span>
-						}
-						<a  asp-action="Edit" asp-route-id="@animal.Id">Edit</a> |
-						<a asp-action="Delete" asp-route-id="@animal.Id">Delete</a>
-					</td>
-				</tr>
-			}
+		@foreach (var animal in ViewBag.AnimalsPagedList)
+		{
+			<tr>
+				<td>@animal.ChipNumber</td>
+				<td>@animal.Name</td>
+				<td>@animal.Species.SpeciesName</td>
+				<td>@animal.Sex</td>
+				<td>@animal.Weight</td>
+				<td>@animal.AdmissionDay</td>
+				<td>
+					@if (animal.OwnerId == null)
+					{
+						@("Not adopted yet")
+					}
+					else
+					{
+						@animal.AdoptionDay
+					}
+				</td>
+				<td>@animal.Health</td>
+				<td>@animal.Employee.EmployeePersonalId</td>
+				<td>
+					@if (animal.OwnerId == null)
+					{
+						<a asp-action="Adopt" asp-route-id="@animal.Id" style="padding-right:4px">Adopt</a>
+						<span>|</span>
+					}
+					else
+					{
+						<a asp-action="Details" asp-route-id="@animal.Id">Details</a>
+						<span>|</span>
+					}
+					<a asp-action="Edit" asp-route-id="@animal.Id">Edit</a> |
+					<a asp-action="Delete" asp-route-id="@animal.Id">Delete</a>
+				</td>
+			</tr>
+		}
 		</tbody>
 	</table>
-	@if(pagedList.PageCount > 1)
+	@if (pagedList.PageCount > 1)
 	{
 		@Html.PagedListPager(pagedList, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentAnimalSortOrder }))
 	}
-	
 </div>
 
 @if (TempData["Success"] != null)

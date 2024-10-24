@@ -4,92 +4,147 @@ using ShelterHelper.Models;
 
 namespace ShelterHelper.Controllers
 {
-	public class AssignmentsController : Controller
-	{
-		private readonly ILogger<HomeController> _logger;
-		private readonly IHttpClientFactory _httpClientFactory;
+    public class AssignmentsController : Controller
+    {
+        private readonly ILogger<HomeController> _logger;
+        private readonly IHttpClientFactory _httpClientFactory;
+        private const string _assignmentsEndpoint = "api/assignments/";
 
+        public AssignmentsController(ILogger<HomeController> logger, IHttpClientFactory httpClientFactory)
+        {
+            _logger = logger;
+            _httpClientFactory = httpClientFactory;
+        }
 
-		public AssignmentsController(ILogger<HomeController> logger, IHttpClientFactory httpClientFactory)
-		{
-			_logger = logger;
-			_httpClientFactory = httpClientFactory;
+        // GET: AssignmentsController
+        public async Task<IActionResult> Index()
+        {
+            IEnumerable<Assignment> assignments = null;
+            var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
+            var response = await httpClient.GetAsync(_assignmentsEndpoint);
 
-		}
-		// GET: AssignmentsController
-		public async Task<IActionResult> Index()
-		{
-			IEnumerable<Assignment> assignments = null;
-			var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
-			var response = await httpClient.GetAsync("api/assignments");
-			
-			if (response.IsSuccessStatusCode)
-			{
-				assignments = await response.Content.ReadAsAsync<IEnumerable<Assignment>>();
-			}
-			return View(assignments);
-		}
-		// GET: AssignmentsController/Create
-		public ActionResult Create()
-		{
-			return View();
-		}
+            if (response.IsSuccessStatusCode)
+            {
+                assignments = await response.Content.ReadAsAsync<IEnumerable<Assignment>>();
+                assignments = assignments.OrderByDescending(a => a.Priority);
+            }
 
-		// POST: AssignmentsController/Create
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public ActionResult Create(IFormCollection collection)
-		{
-			try
-			{
-				return RedirectToAction(nameof(Index));
-			}
-			catch
-			{
-				return View();
-			}
-		}
+            return View(assignments);
+        }
 
-		// GET: AssignmentsController/Edit/5
-		public ActionResult Edit(int id)
-		{
-			return View();
-		}
+        // GET: AssignmentsController/Create
+        public ActionResult Create()
+        {
+            return View();
+        }
 
-		// POST: AssignmentsController/Edit/5
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public ActionResult Edit(int id, IFormCollection collection)
-		{
-			try
-			{
-				return RedirectToAction(nameof(Index));
-			}
-			catch
-			{
-				return View();
-			}
-		}
+        // POST: AssignmentsController/Create
+        [HttpPost, ActionName("Create")]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> CreateConfirmed(Assignment assignment)
+        {
+            var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _logger.LogDebug($"Posting new assignment: {assignment.Title} data to {_assignmentsEndpoint}.");
+                    var response = await httpClient.PostAsJsonAsync(_assignmentsEndpoint, assignment);
+                    response.EnsureSuccessStatusCode();
+                    _logger.LogDebug(
+                        $"Posted new assignment: {assignment.Title} data to {_assignmentsEndpoint} successfully");
+                    TempData["Success"] = "Success, database updated.";
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
 
-		// GET: AssignmentsController/Delete/5
-		public ActionResult Delete(int id)
-		{
-			return View();
-		}
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                TempData["Error"] = "Error, ModelState invalid.";
+            }
 
-		// POST: AssignmentsController/Delete/5
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public ActionResult Delete(int id, IFormCollection collection)
-		{
-			try
-			{
-				return RedirectToAction(nameof(Index));
-			}
-			catch
-			{
-				return View();
-			}
-		}
-	}
+            return View(assignment);
+        }
+
+        // GET: AssignmentsController/Edit/5
+        public async Task<ActionResult> Edit(int? id)
+        {
+            var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
+            var assignment = new Assignment();
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            HttpResponseMessage response = await httpClient.GetAsync($"{_assignmentsEndpoint}{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                assignment = await response.Content.ReadAsAsync<Assignment>();
+            }
+
+            return View(assignment);
+        }
+
+        // POST: AssignmentsController/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Edit(int? id,
+            [Bind("AssignmentId, Title, Description, Priority, CreatorId, CreationDate, IsCompleted, IsInProgress")]
+            Assignment assignment)
+        {
+            var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    HttpResponseMessage response =
+                        await httpClient.PostAsJsonAsync($"{_assignmentsEndpoint}{assignment.AssignmentId}",
+                            assignment);
+                    response.EnsureSuccessStatusCode();
+                    TempData["Success"] = "Edited successfully.";
+                    return RedirectToAction("Index");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+            }
+            else
+            {
+                TempData["Error"] = "Failed to edit.";
+            }
+
+            return View(assignment);
+        }
+
+        // GET: AssignmentsController/Delete/5
+        public ActionResult Delete(int id)
+        {
+            return View();
+        }
+
+        // POST: AssignmentsController/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Delete(int id, IFormCollection collection)
+        {
+            try
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                return View();
+            }
+        }
+    }
 }

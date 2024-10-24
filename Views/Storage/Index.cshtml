@@ -1,100 +1,100 @@
 ﻿@model ShelterHelper.ViewModels.SpeciesViewModel;
-@{    
+@{
     ViewData["Title"] = "Index";
-    ViewBag.Title = "Warehouse resources";       
+    ViewBag.Title = "Warehouse resources";
 }
 
 <h1>Warehouse</h1>
-<hr />
+<hr/>
 
 <span>    
     <a asp-action="AddResources">Add resources</a>
-</span> 
+</span>
 
 <div class="resources-container">
     <table class="table" style="grid-column: 1">
         <thead>
-            <tr>
-                <th>Name</th>
-                <th>Quantity</th>
-            </tr>
+        <tr>
+            <th>Name</th>
+            <th>Quantity</th>
+        </tr>
         </thead>
         <tbody>
-            @foreach (var product in Model.AccessoriesList.OrderBy(a => a.AccessoryName))
-            {
-                <tr>
-                    <td>@product.AccessoryName</td>
-                    <td>@product.Quantity</td>
-                    <td>
-                        <a asp-action="EditAccessory" asp-route-id ="@product.AccessoryId" >Edit</a> |
-                        <a asp-action="DeleteAccessory" asp-route-id="@product.AccessoryId">Delete</a>
-                    </td>
-                </tr>
-            }
+        @foreach (var product in Model.AccessoriesList.OrderBy(a => a.AccessoryName))
+        {
+            <tr>
+                <td>@product.AccessoryName</td>
+                <td>@product.Quantity</td>
+                <td>
+                    <a asp-action="EditAccessory" asp-route-id="@product.AccessoryId">Edit</a> |
+                    <a asp-action="DeleteAccessory" asp-route-id="@product.AccessoryId">Delete</a>
+                </td>
+            </tr>
+        }
         </tbody>
     </table>
 
     <table class="table" style="grid-column: 2">
         <thead>
-            <tr>
-                <th>Name</th>
-                <th>Quantity</th>
-            </tr>
+        <tr>
+            <th>Name</th>
+            <th>Quantity</th>
+        </tr>
         </thead>
         <tbody>
-            @foreach (var product in Model.BeddingsList.OrderBy(a => a.BeddingName))
-            {
-                <tr>
-                    <td>@product.BeddingName</td>
-                    <td>@product.Quantity_kg kg</td>
-                    <td>
-                        <a asp-action="EditBedding" asp-route-id="@product.BeddingId">Edit</a> |
-                        <a asp-action="DeleteBedding" asp-route-id="@product.BeddingId">Delete</a>
-                    </td>
-                </tr>
-            }
+        @foreach (var product in Model.BeddingsList.OrderBy(a => a.BeddingName))
+        {
+            <tr>
+                <td>@product.BeddingName</td>
+                <td>@product.Quantity_kg kg</td>
+                <td>
+                    <a asp-action="EditBedding" asp-route-id="@product.BeddingId">Edit</a> |
+                    <a asp-action="DeleteBedding" asp-route-id="@product.BeddingId">Delete</a>
+                </td>
+            </tr>
+        }
         </tbody>
     </table>
     <table class="table" style="grid-column: 3">
         <thead>
-            <tr>
-                <th>Name</th>
-                <th>Quantity</th>
-            </tr>
+        <tr>
+            <th>Name</th>
+            <th>Quantity</th>
+        </tr>
         </thead>
         <tbody>
-            @foreach (var product in Model.DietsList.OrderBy(a => a.DietName))
-            {
-                <tr>
-                    <td>@product.DietName</td>
-                    <td>@product.Quantity_kg kg</td>
-                    <td>
-                        <a asp-action="EditDiet" asp-route-id="@product.DietId">Edit</a> |
-                        <a asp-action="DeleteDiet" asp-route-id="@product.DietId">Delete</a>
-                    </td>
-                </tr>
-            }
+        @foreach (var product in Model.DietsList.OrderBy(a => a.DietName))
+        {
+            <tr>
+                <td>@product.DietName</td>
+                <td>@product.Quantity_kg kg</td>
+                <td>
+                    <a asp-action="EditDiet" asp-route-id="@product.DietId">Edit</a> |
+                    <a asp-action="DeleteDiet" asp-route-id="@product.DietId">Delete</a>
+                </td>
+            </tr>
+        }
         </tbody>
     </table>
     <table class="table" style="grid-column: 4">
         <thead>
-            <tr>
-                <th>Name</th>
-                <th>Quantity</th>
-            </tr>
+        <tr>
+            <th>Name</th>
+            <th>Quantity</th>
+        </tr>
         </thead>
         <tbody>
-            @foreach (var product in Model.ToysList.OrderBy(a => a.ToyName))
-            {
-                <tr>
-                    <td>@product.ToyName</td>
-                    <td>@product.Quantity</td>
-                    <td>
-                        <a asp-action="EditToy" asp-route-id="@product.ToyId">Edit</a> |
-                        <a asp-action="DeleteToy" asp-route-id="@product.ToyId">Delete</a>
-                    </td>
-                </tr>
-            }
+        @foreach (var product in Model.ToysList.OrderBy(a => a.ToyName))
+        {
+            <tr>
+                <td>@product.ToyName</td>
+                <td>@product.Quantity</td>
+                <td>
+                    <a asp-action="EditToy" asp-route-id="@product.ToyId">Edit</a> |
+                    <a asp-action="DeleteToy" asp-route-id="@product.ToyId">Delete</a>
+                </td>
+            </tr>
+        }
         </tbody>
     </table>
 </div>

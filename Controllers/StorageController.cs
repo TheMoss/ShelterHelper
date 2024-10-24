@@ -11,7 +11,7 @@ public class StorageController : Controller
 {
     public const string ResourcesEndpoint = "api/resources/";
     public const string SpeciesEndpoint = "api/species/";
-    
+
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger _logger;
 
@@ -49,7 +49,7 @@ public class StorageController : Controller
     {
         ViewBag.CurrentStorageSortOrder = sortOrder;
         IEnumerable<Species> species = null;
-        
+
         var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
         try
         {
@@ -159,10 +159,12 @@ public class StorageController : Controller
         {
             try
             {
-                _logger.LogDebug($"Posting id: {species.SpeciesId}, species: {species.SpeciesName} data to {SpeciesEndpoint}.");
+                _logger.LogDebug(
+                    $"Posting id: {species.SpeciesId}, species: {species.SpeciesName} data to {SpeciesEndpoint}.");
                 var response = await httpClient.PostAsJsonAsync(SpeciesEndpoint, species);
                 response.EnsureSuccessStatusCode();
-                _logger.LogDebug($"Posted id:{species.SpeciesId}, species: {species.SpeciesName} data to {SpeciesEndpoint} successfully");
+                _logger.LogDebug(
+                    $"Posted id:{species.SpeciesId}, species: {species.SpeciesName} data to {SpeciesEndpoint} successfully");
                 TempData["Success"] = "Success, database updated.";
             }
             catch (Exception e)
@@ -185,7 +187,7 @@ public class StorageController : Controller
     {
         var speciesViewModel = new SpeciesViewModel();
         var availableSpeciesOptions = new SpeciesViewModel();
-        
+
         var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
         if (id == null) return NotFound();
 
@@ -193,11 +195,10 @@ public class StorageController : Controller
         {
             _logger.LogDebug($"Requesting data from {SpeciesEndpoint}.");
             var response = await httpClient.GetAsync($"{SpeciesEndpoint}{id}");
-            
+
             //get all diets etc. from the resources but use current species data to preselect initial diet value
             if (response.IsSuccessStatusCode)
             {
-                
                 speciesViewModel = await response.Content.ReadAsAsync<SpeciesViewModel>();
                 _logger.LogDebug($"Data from {SpeciesEndpoint} received.");
 
@@ -211,7 +212,7 @@ public class StorageController : Controller
                 {
                     return NotFound();
                 }
-                    
+
 
                 speciesViewModel.AccessoriesList = availableSpeciesOptions.AccessoriesList;
                 speciesViewModel.BeddingsList = availableSpeciesOptions.BeddingsList;
@@ -224,11 +225,11 @@ public class StorageController : Controller
                 speciesViewModel.SelectedToyId = speciesViewModel.Toy.ToyId;
             }
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Console.WriteLine(e);
         }
-        
+
         return View("Views/Storage/Species/Edit.cshtml", speciesViewModel);
     }
 
@@ -255,7 +256,8 @@ public class StorageController : Controller
         {
             try
             {
-                _logger.LogDebug($"Posting data to {SpeciesEndpoint}, id: {speciesViewModel.SpeciesId}, species name: {speciesViewModel.SpeciesName}.");   
+                _logger.LogDebug(
+                    $"Posting data to {SpeciesEndpoint}, id: {speciesViewModel.SpeciesId}, species name: {speciesViewModel.SpeciesName}.");
                 var response =
                     await httpClient.PostAsJsonAsync($"{SpeciesEndpoint}{speciesUpdate.SpeciesId}", speciesUpdate);
                 response.EnsureSuccessStatusCode();
@@ -278,10 +280,10 @@ public class StorageController : Controller
     public async Task<IActionResult> Delete(int? id)
     {
         var species = new Species();
-        
+
         var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
         if (id == null) return NotFound();
-        
+
         try
         {
             _logger.LogDebug($"Requesting data from {SpeciesEndpoint}.");
@@ -290,13 +292,14 @@ public class StorageController : Controller
             {
                 species = await response.Content.ReadAsAsync<Species>();
             }
+
             _logger.LogDebug($"Data from {SpeciesEndpoint} received.");
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
         }
-        
+
         return View("Views/Storage/Species/Delete.cshtml", species);
     }
 
@@ -310,19 +313,19 @@ public class StorageController : Controller
         {
             _logger.LogDebug($"Requesting deleting data from {SpeciesEndpoint}, id: {speciesId}.");
             var response = await httpClient.GetAsync($"{SpeciesEndpoint}{speciesId}");
-            
-                    if (response.IsSuccessStatusCode)
-                    {
-                        await httpClient.DeleteAsync($"{SpeciesEndpoint}{speciesId}");
-                        _logger.LogDebug($"Deleted data from {SpeciesEndpoint} successfully, id: {speciesId}.");
-                        TempData["Success"] = "Deleted successfully.";
-                    }
-                    else
-                    {
-                        TempData["Error"] = "Failed to delete";
-                    }
+
+            if (response.IsSuccessStatusCode)
+            {
+                await httpClient.DeleteAsync($"{SpeciesEndpoint}{speciesId}");
+                _logger.LogDebug($"Deleted data from {SpeciesEndpoint} successfully, id: {speciesId}.");
+                TempData["Success"] = "Deleted successfully.";
+            }
+            else
+            {
+                TempData["Error"] = "Failed to delete";
+            }
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Console.WriteLine(e);
         }
@@ -349,17 +352,18 @@ public class StorageController : Controller
         {
             try
             {
-                _logger.LogDebug($"Posting data to {ResourcesEndpoint}, id:{accessory.AccessoryId}, accessory name: {accessory.AccessoryName}.");
+                _logger.LogDebug(
+                    $"Posting data to {ResourcesEndpoint}, id:{accessory.AccessoryId}, accessory name: {accessory.AccessoryName}.");
                 var response = await httpClient.PostAsJsonAsync($"{ResourcesEndpoint}accessories", accessory);
                 response.EnsureSuccessStatusCode();
-                _logger.LogDebug($"Posted data to {ResourcesEndpoint} successfully, id:{accessory.AccessoryId}, accessory name: {accessory.AccessoryName}.");
+                _logger.LogDebug(
+                    $"Posted data to {ResourcesEndpoint} successfully, id:{accessory.AccessoryId}, accessory name: {accessory.AccessoryName}.");
                 TempData["Success"] = "Success, new accessory type added.";
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
             }
-            
         }
         else
         {
@@ -373,7 +377,7 @@ public class StorageController : Controller
     {
         var accessory = new Accessory();
         var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
-        
+
         if (id == null) return NotFound();
 
         try
@@ -384,15 +388,13 @@ public class StorageController : Controller
             {
                 accessory = await response.Content.ReadAsAsync<Accessory>();
                 _logger.LogDebug($"Data from {ResourcesEndpoint} received.");
-                
             }
-
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
         }
-        
+
         return View("Views/Storage/EditResource/EditAccessory.cshtml", accessory);
     }
 
@@ -400,7 +402,8 @@ public class StorageController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ConfirmEditAccessory(
-        [Bind("AccessoryId", "AccessoryName", "Quantity")] Accessory accessory)
+        [Bind("AccessoryId", "AccessoryName", "Quantity")]
+        Accessory accessory)
     {
         var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
 
@@ -408,12 +411,14 @@ public class StorageController : Controller
         {
             try
             {
-                _logger.LogDebug($"Posting data to {ResourcesEndpoint}, id:{accessory.AccessoryId}, accessory name: {accessory.AccessoryName}.");
+                _logger.LogDebug(
+                    $"Posting data to {ResourcesEndpoint}, id:{accessory.AccessoryId}, accessory name: {accessory.AccessoryName}.");
                 var response =
                     await httpClient.PostAsJsonAsync($"{ResourcesEndpoint}accessories/{accessory.AccessoryId}",
                         accessory);
                 response.EnsureSuccessStatusCode();
-                _logger.LogDebug($"Posted data to {ResourcesEndpoint} successfully, id:{accessory.AccessoryId}, accessory name: {accessory.AccessoryName}.");
+                _logger.LogDebug(
+                    $"Posted data to {ResourcesEndpoint} successfully, id:{accessory.AccessoryId}, accessory name: {accessory.AccessoryName}.");
                 TempData["Success"] = "Success, database updated.";
             }
             catch (Exception e)
@@ -432,7 +437,7 @@ public class StorageController : Controller
     {
         var accessory = new Accessory();
         var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
-        
+
         if (id == null) return NotFound();
         try
         {
@@ -443,13 +448,12 @@ public class StorageController : Controller
                 _logger.LogDebug($"Data from {ResourcesEndpoint} received");
                 accessory = await response.Content.ReadAsAsync<Accessory>();
             }
-
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
         }
-        
+
 
         if (accessory == null) return NotFound();
         return View("Views/Storage/DeleteResource/DeleteAccessory.cshtml", accessory);
@@ -461,7 +465,7 @@ public class StorageController : Controller
     public async Task<IActionResult> ConfirmDeleteAccessory(int accessoryId)
     {
         var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
-        
+
         try
         {
             _logger.LogDebug($"Requesting data from {ResourcesEndpoint}.");
@@ -483,7 +487,7 @@ public class StorageController : Controller
         {
             Console.WriteLine(e);
         }
-        
+
 
         return RedirectToAction("Index");
     }
@@ -510,11 +514,12 @@ public class StorageController : Controller
             try
             {
                 //check if entry exists or create a new one
-                _logger.LogDebug($"Posting data to {ResourcesEndpoint}, name: {bedding.BeddingName}, quantity: {bedding.Quantity_kg}.");
-                            var response = await httpClient.PostAsJsonAsync($"{ResourcesEndpoint}beddings", bedding);
-                            response.EnsureSuccessStatusCode();
-                            _logger.LogDebug($"Posted data to {ResourcesEndpoint} successfully");
-                            TempData["Success"] = "Success, new bedding type added.";
+                _logger.LogDebug(
+                    $"Posting data to {ResourcesEndpoint}, name: {bedding.BeddingName}, quantity: {bedding.Quantity_kg}.");
+                var response = await httpClient.PostAsJsonAsync($"{ResourcesEndpoint}beddings", bedding);
+                response.EnsureSuccessStatusCode();
+                _logger.LogDebug($"Posted data to {ResourcesEndpoint} successfully");
+                TempData["Success"] = "Success, new bedding type added.";
             }
             catch (Exception e)
             {
@@ -532,14 +537,14 @@ public class StorageController : Controller
     public async Task<IActionResult> EditBedding(int? id)
     {
         var bedding = new Bedding();
-        
+
         var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
         if (id == null) return NotFound();
         try
         {
             _logger.LogDebug($"Requesting data from {ResourcesEndpoint}.");
             var response = await httpClient.GetAsync($"{ResourcesEndpoint}beddings/{id}");
-            
+
             if (response.IsSuccessStatusCode)
             {
                 _logger.LogDebug($"Data from {ResourcesEndpoint} received");
@@ -550,7 +555,7 @@ public class StorageController : Controller
         {
             Console.WriteLine(e);
         }
-        
+
         return View("Views/Storage/EditResource/EditBedding.cshtml", bedding);
     }
 
@@ -558,18 +563,22 @@ public class StorageController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ConfirmEditBedding(
-        [Bind("BeddingId", "BeddingName", "Quantity_kg")] Bedding bedding)
+        [Bind("BeddingId", "BeddingName", "Quantity_kg")]
+        Bedding bedding)
     {
         var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
 
         if (ModelState.IsValid)
         {
             try
-            {_logger.LogDebug($"Posting data to {ResourcesEndpoint}, id:{bedding.BeddingId}, name: {bedding.BeddingName}, quantity: {bedding.Quantity_kg}.");
+            {
+                _logger.LogDebug(
+                    $"Posting data to {ResourcesEndpoint}, id:{bedding.BeddingId}, name: {bedding.BeddingName}, quantity: {bedding.Quantity_kg}.");
                 var response =
                     await httpClient.PostAsJsonAsync($"{ResourcesEndpoint}beddings/{bedding.BeddingId}", bedding);
                 response.EnsureSuccessStatusCode();
-                _logger.LogDebug($"Posted data to {ResourcesEndpoint} successfully, id:{bedding.BeddingId}, name: {bedding.BeddingName}, quantity: {bedding.Quantity_kg}.");
+                _logger.LogDebug(
+                    $"Posted data to {ResourcesEndpoint} successfully, id:{bedding.BeddingId}, name: {bedding.BeddingName}, quantity: {bedding.Quantity_kg}.");
                 TempData["Success"] = "Success, database updated.";
             }
             catch (Exception e)
@@ -588,7 +597,7 @@ public class StorageController : Controller
     public async Task<IActionResult> DeleteBedding(int? id)
     {
         var bedding = new Bedding();
-        
+
         var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
         if (id == null) return NotFound();
         try
@@ -605,7 +614,7 @@ public class StorageController : Controller
         {
             Console.WriteLine(e);
         }
-        
+
 
         if (bedding == null) return NotFound();
         return View("Views/Storage/DeleteResource/DeleteBedding.cshtml", bedding);
@@ -664,10 +673,12 @@ public class StorageController : Controller
             if (ModelState.IsValid)
             {
                 //check if entry exists or create a new one
-                _logger.LogDebug($"Posting data to {ResourcesEndpoint}, name: {diet.DietName}, quantity: {diet.Quantity_kg}.");
+                _logger.LogDebug(
+                    $"Posting data to {ResourcesEndpoint}, name: {diet.DietName}, quantity: {diet.Quantity_kg}.");
                 var response = await httpClient.PostAsJsonAsync($"{ResourcesEndpoint}diets", diet);
                 response.EnsureSuccessStatusCode();
-                _logger.LogDebug($"Posted data to {ResourcesEndpoint} successfully, name: {diet.DietName}, quantity: {diet.Quantity_kg}.");
+                _logger.LogDebug(
+                    $"Posted data to {ResourcesEndpoint} successfully, name: {diet.DietName}, quantity: {diet.Quantity_kg}.");
                 TempData["Success"] = "Success, new diet type added.";
             }
             else
@@ -718,10 +729,12 @@ public class StorageController : Controller
         {
             try
             {
-                _logger.LogDebug($"Posting data to {ResourcesEndpoint}, id: {diet.DietId}, name:{diet.DietName}, quantity: {diet.Quantity_kg}.");
+                _logger.LogDebug(
+                    $"Posting data to {ResourcesEndpoint}, id: {diet.DietId}, name:{diet.DietName}, quantity: {diet.Quantity_kg}.");
                 var response = await httpClient.PostAsJsonAsync($"{ResourcesEndpoint}diets/{diet.DietId}", diet);
                 response.EnsureSuccessStatusCode();
-                _logger.LogDebug($"Posted data to {SpeciesEndpoint} successfully, id: {diet.DietId}, name:{diet.DietName}, quantity: {diet.Quantity_kg}.");
+                _logger.LogDebug(
+                    $"Posted data to {SpeciesEndpoint} successfully, id: {diet.DietId}, name:{diet.DietName}, quantity: {diet.Quantity_kg}.");
                 TempData["Success"] = "Success, database updated.";
             }
             catch (HttpRequestException ex)
@@ -756,7 +769,7 @@ public class StorageController : Controller
         {
             Console.WriteLine(e);
         }
-        
+
         return View("Views/Storage/DeleteResource/DeleteDiet.cshtml", diet);
     }
 
@@ -813,7 +826,8 @@ public class StorageController : Controller
             _logger.LogDebug($"Posting data to {ResourcesEndpoint}, name: {toy.ToyName}, quantity: {toy.Quantity}.");
             var response = await httpClient.PostAsJsonAsync($"{ResourcesEndpoint}toys", toy);
             response.EnsureSuccessStatusCode();
-            _logger.LogDebug($"Posted data to {ResourcesEndpoint} successfully, name: {toy.ToyName}, quantity: {toy.Quantity}.");
+            _logger.LogDebug(
+                $"Posted data to {ResourcesEndpoint} successfully, name: {toy.ToyName}, quantity: {toy.Quantity}.");
             TempData["Success"] = "Success, new toy type added.";
         }
         else
@@ -828,7 +842,7 @@ public class StorageController : Controller
     {
         var toy = new Toy();
         var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
-        
+
         if (id == null) return NotFound();
         try
         {
@@ -840,7 +854,6 @@ public class StorageController : Controller
                 _logger.LogDebug($"Data from {ResourcesEndpoint} received.");
                 toy = await response.Content.ReadAsAsync<Toy>();
             }
-
         }
         catch (Exception e)
         {
@@ -856,24 +869,26 @@ public class StorageController : Controller
     public async Task<IActionResult> ConfirmEditToy([Bind("ToyId", "ToyName", "Quantity")] Toy toy)
     {
         var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
-         if (ModelState.IsValid)
-         {
-                try
-                {
-                    _logger.LogDebug($"Posting data to {SpeciesEndpoint}, id:{toy.ToyId}, name: {toy.ToyName}, quantity: {toy.Quantity}.");
-                    var response = await httpClient.PostAsJsonAsync($"{ResourcesEndpoint}toys/{toy.ToyId}", toy);
-                    response.EnsureSuccessStatusCode();
-                    _logger.LogDebug($"Posted data to {ResourcesEndpoint} successfully, id:{toy.ToyId}, name: {toy.ToyName}, quantity: {toy.Quantity}.");
-                    TempData["Success"] = "Success, database updated.";
-                }
-                catch (HttpRequestException ex)
-                {
-                    throw new HttpRequestException("Adding a new record to the database failed", ex);
-                }
+        if (ModelState.IsValid)
+        {
+            try
+            {
+                _logger.LogDebug(
+                    $"Posting data to {SpeciesEndpoint}, id:{toy.ToyId}, name: {toy.ToyName}, quantity: {toy.Quantity}.");
+                var response = await httpClient.PostAsJsonAsync($"{ResourcesEndpoint}toys/{toy.ToyId}", toy);
+                response.EnsureSuccessStatusCode();
+                _logger.LogDebug(
+                    $"Posted data to {ResourcesEndpoint} successfully, id:{toy.ToyId}, name: {toy.ToyName}, quantity: {toy.Quantity}.");
+                TempData["Success"] = "Success, database updated.";
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new HttpRequestException("Adding a new record to the database failed", ex);
+            }
 
-                return RedirectToAction("Index");
-                
-         }
+            return RedirectToAction("Index");
+        }
+
         return View(toy);
     }
 
@@ -898,7 +913,7 @@ public class StorageController : Controller
         {
             Console.WriteLine(e);
         }
-        
+
         return View("Views/Storage/DeleteResource/DeleteToy.cshtml", toy);
     }
 

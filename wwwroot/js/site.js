@@ -1,18 +1,17 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
-
-// Write your JavaScript code.
-
-
-
-function closeModal(selector) {
+﻿function closeModal(selector) {
     $(selector).modal("hide");
 }
 
 function openModal(selector) {
     $(selector).modal("show");
 }
-document.getElementById('openDefault').click();
+
+const defaultTab = document.getElementById('openDefault');
+if (defaultTab != null) {
+    defaultTab.click();
+}
+;
+
 function openType(event, typeName) {
     var i, tabcontent, tablinks;
 
@@ -32,20 +31,106 @@ function openType(event, typeName) {
 
 const scroller = document.querySelector("#scroller");
 const container = document.querySelector(".container");
-scroller.style.visibility = "hidden";
+if (scroller != null) {
+    scroller.style.visibility = "hidden";
+
+    scroller.addEventListener("click", function () {
+        container.scrollTo({
+            top: 0,
+            left: 0
+        });
+    });
+
+}
+
+const completedTrue = document.getElementById("completedTrue");
+completedTrue.addEventListener("click", function () {
+
+    var inProgressTrue = document.getElementById("inProgressTrue");
+    var inProgressFalse = document.getElementById("inProgressFalse");
+
+    if (completedTrue.checked) {
+        inProgressFalse.checked = true;
+
+        inProgressFalse.disabled = true;
+        inProgressTrue.disabled = true;
+    }
+})
+
+const completedFalse = document.getElementById("completedFalse");
+completedFalse.addEventListener("click", function () {
+    var inProgressTrue = document.getElementById("inProgressTrue");
+    var inProgressFalse = document.getElementById("inProgressFalse");
+
+    if (completedFalse.checked) {
+
+        inProgressFalse.disabled = false;
+        inProgressTrue.disabled = false;
+    }
+})
+
 container.addEventListener("scroll", e => {
     if (container.scrollTop > 10) {
         scroller.style.visibility = "visible";
-    }
-    else {
+    } else {
         scroller.style.visibility = "hidden";
     }
-    
+
 });
 
-scroller.addEventListener("click", function () {
-    container.scrollTo({
-        top: 0,
-    left: 0
-    });
-});
+function generateChipNumber() {
+    document.getElementById("chip-number-input").value = Math.floor(Math.random() * (99999999 - 11111111 + 1) + 11111111);
+};
+
+
+function submitAddResources(event, itemId, targetCategory) {
+    event.preventDefault();
+
+    let itemName = event.currentTarget.querySelector("p").innerHTML;
+    let input = event.currentTarget.querySelector("input")
+    let inputValue = input.value;
+    console.log(itemId, itemName, inputValue);
+
+    switch (targetCategory) {
+        case 'diet':
+            addResourcesDiet(event, itemId, inputValue);
+            break;
+        case 'bedding':
+            break;
+        case 'toy':
+            break;
+        case 'accessory':
+            break;
+    }
+    input.value = '';
+}
+
+async function addResourcesDiet(event, itemId, inputValue) {
+    const dietUrl = `https://localhost:7147/api/resources/diets/${itemId}`;
+    let updatedQuantity = 0;
+    await fetch(dietUrl)
+        .then(response => {
+            return response.json()
+        })
+        .then(data => {
+            updatedQuantity = data.quantity_kg + parseInt(inputValue);
+            console.log(`Updated quantity: ${updatedQuantity}`);
+        })
+        .catch(error => console.error(`Error fetching data: ${error}`));
+
+    fetch(dietUrl, {
+        method: "PATCH",
+        body: JSON.stringify([{
+            "op": "replace",
+            "path": "quantity_kg",
+            "value": updatedQuantity.toString()
+        }]),
+        headers: {
+            'Content-type': 'application/json'
+        }
+    })
+        .then(response => response.json())
+        .then(json => console.log(json))
+        .catch(error => console.error(`Error putting data: ${error}`));
+
+}

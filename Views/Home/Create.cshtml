@@ -6,30 +6,35 @@
 
 <h1>Create</h1>
 <h4>Add a new animal</h4>
-<hr />
+<hr/>
 
-<div class="row">	
-	<div class="col-md-4">		
+<div class="row">
+	<div class="col-md-4">
 		<form asp-action="Create">
 			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 			<div>
 				<label asp-for="Animal.SpeciesId" class="control-label"></label>
-				<select asp-for="Animal.SpeciesId" asp-items="new SelectList(Model.SpeciesList, nameof(Species.SpeciesId), nameof(Species.SpeciesName))" class="form-control">
+				<select asp-for="Animal.SpeciesId"
+				        asp-items="new SelectList(Model.SpeciesList, nameof(Species.SpeciesId), nameof(Species.SpeciesName))"
+				        class="form-control">
 					<option disabled selected hidden>Select option</option>
 				</select>
 				<span asp-validation-for="Animal.SpeciesId" class="text-danger"></span>
 			</div>
+			
 			<div class="form-group">
 				<label asp-for="Animal.ChipNumber" class="control-label"></label>
 				<input asp-for="Animal.ChipNumber" class="form-control" id="chip-number-input"/>
 				<span asp-validation-for="Animal.ChipNumber" class="text-danger"></span>
 				<button type="button" onclick="generateChipNumber()">generate id number</button>
 			</div>
+			
 			<div class="form-group">
 				<label asp-for="Animal.Name" class="control-label"></label>
 				<input asp-for="Animal.Name" class="form-control" placeholder="Insert the animal's name here"/>
 				<span asp-validation-for="Animal.Name" class="text-danger"></span>
 			</div>
+			
 			<div class="form-group">
 				<label asp-for="Animal.Sex" class="control-label"></label>
 				<div class="form-group">
@@ -44,11 +49,13 @@
 				</div>
 				<span asp-validation-for="Animal.Sex" class="text-danger"></span>
 			</div>
+			
 			<div class="form-group">
 				<label asp-for="Animal.Weight" class="control-label"></label>
 				<input asp-for="Animal.Weight" class="form-control" value="" placeholder="Insert weight here"/>
 				<span asp-validation-for="Animal.Weight" class="text-danger"></span>
 			</div>
+			
 			<div class="form-group">
 				<label asp-for="Animal.AdmissionDay" class="control-label"></label>
 				<input asp-for="Animal.AdmissionDay" class="form-control" value=""/>
@@ -60,11 +67,14 @@
 				<input asp-for="Animal.Health" class="form-control" placeholder="Insert health notes here"/>
 				<span asp-validation-for="Animal.Health" class="text-danger"></span>
 			</div>
+			
 			<div class="form-group">
 				<label asp-for="Animal.EmployeeId" class="control-label"></label>
-				<input asp-for="Animal.EmployeeId" class="form-control" value="" type="number" placeholder="Temporarily use numbers 1-5"/>
+				<input asp-for="Animal.EmployeeId" class="form-control" value="" type="number"
+				       placeholder="Temporarily use numbers 1-5"/>
 				<span asp-validation-for="Animal.EmployeeId" class="text-danger"></span>
 			</div>
+			
 			<div class="form-group">
 				<input type="submit" value="Create" class="btn btn-primary"/>
 			</div>

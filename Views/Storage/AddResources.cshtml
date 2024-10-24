@@ -6,7 +6,7 @@
 
 <h1>Add resources</h1>
 <h4>Received shipment</h4>
-<hr />
+<hr/>
 
 <div class="tabs">
 	<button type="button" class="tablinks" onclick="openType(event, 'Diet')" id="openDefault">Diet</button>
@@ -22,18 +22,17 @@
 			<ul class="add-resources-table">
 				@foreach (var item in Model.DietsList)
 				{
-
 					<li>
 						<form onsubmit="submitAddResources(event, @item.DietId, 'diet')">
 							<p>@item.DietName</p>
 							<div>
-								<input required min=1 class="form-control" type="number" placeholder="Insert the quantity here" />
+								<input required min=1 class="form-control" type="number"
+								       placeholder="Insert the quantity here"/>
 								<span class="text-danger"></span>
 							</div>
 							<button type="submit" value="Submit" class="btn btn-primary">Submit</button>
-						</form>						
+						</form>
 					</li>
-
 				}
 			</ul>
 		</div>
@@ -46,12 +45,12 @@
 			<ul class="add-resources-table">
 				@foreach (var item in Model.BeddingsList)
 				{
-
 					<li>
 						<form onsubmit="submitAddResources(event, @item.BeddingId)">
 							<p>@item.BeddingName</p>
 							<div>
-								<input required min=1 class="form-control" type="number" placeholder="Insert the quantity here" />
+								<input required min=1 class="form-control" type="number"
+								       placeholder="Insert the quantity here"/>
 								<span class="text-danger"></span>
 							</div>
 							<button type="submit" value="Submit" class="btn btn-primary">Submit</button>
@@ -69,12 +68,12 @@
 			<ul class="add-resources-table">
 				@foreach (var item in Model.ToysList)
 				{
-
 					<li value=@item.ToyId>
 						<form>
 							<p>@item.ToyName</p>
 							<div>
-								<input required min=1 class="form-control" type="number" placeholder="Insert the quantity here" />
+								<input required min=1 class="form-control" type="number"
+								       placeholder="Insert the quantity here"/>
 								<span class="text-danger"></span>
 							</div>
 							<button type="submit" value="Submit" class="btn btn-primary">Submit</button>
@@ -96,7 +95,8 @@
 						<form>
 							<p>@item.AccessoryName</p>
 							<div>
-								<input required min=1 class="form-control" type="number" placeholder="Insert the quantity here" />
+								<input required min=1 class="form-control" type="number"
+								       placeholder="Insert the quantity here"/>
 								<span class="text-danger"></span>
 							</div>
 							<button type="submit" value="Submit" class="btn btn-primary">Submit</button>

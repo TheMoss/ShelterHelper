@@ -3,13 +3,12 @@
 @{
 	ViewData["Title"] = "Create";
 	var prioritiesList = new SelectList(new List<SelectListItem>
-{
-new SelectListItem {Text = "Low", Value = "0"},
-new SelectListItem { Text= "Medium", Value = "1"},
-new SelectListItem{ Text = "High", Value = "2"},
-new SelectListItem{ Text = "Very high", Value = "3"}
-}, "Value", "Text");
-
+	{
+		new SelectListItem { Text = "Low", Value = "0" },
+		new SelectListItem { Text = "Medium", Value = "1" },
+		new SelectListItem { Text = "High", Value = "2" },
+		new SelectListItem { Text = "Very high", Value = "3" }
+	}, "Value", "Text");
 }
 
 <h1>Create</h1>

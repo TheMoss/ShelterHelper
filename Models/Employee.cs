@@ -11,6 +11,5 @@ namespace ShelterHelper.Models
 		public int? EmployeePersonalId{ get; set; }
         [StringLength(50)]
         public string? EmployeeName { get; set; }
-
-	}
+    }
 }

@@ -3,70 +3,70 @@
 	ViewData["Title"] = "Adoption";
 }
 <h1>Adoption</h1>
-<hr />
+<hr/>
 <div class="row">
 	<div class="col-md-4">
-		
+
 		<form asp-action="Adopt" method="post">
 			<div asp-validation-summary="ModelOnly"></div>
-			<input type="hidden" asp-for="Animal.Id" />
-			<input type="hidden" asp-for="Animal.Species.Toy.ToyName" />
-			<input type="hidden" asp-for="Animal.Species.Accessory.AccessoryName" />
+			<input type="hidden" asp-for="Animal.Id"/>
+			<input type="hidden" asp-for="Animal.Species.Toy.ToyName"/>
+			<input type="hidden" asp-for="Animal.Species.Accessory.AccessoryName"/>
 
-				<div class="form-group">
-					<label asp-for="Animal.ChipNumber" class="control-label"></label>
-					<input asp-for="Animal.ChipNumber" readonly class="form-control" style="color:black" />
-					<span asp-validation-for="Animal.ChipNumber" class="text-danger"></span>
-				</div>
+			<div class="form-group">
+				<label asp-for="Animal.ChipNumber" class="control-label"></label>
+				<input asp-for="Animal.ChipNumber" readonly class="form-control" style="color:black"/>
+				<span asp-validation-for="Animal.ChipNumber" class="text-danger"></span>
+			</div>
 
-				<div class="form-group">
-					<label asp-for="Animal.Name" class="control-label"></label>
-					<input id="animal-name" asp-for="Animal.Name" class="form-control" placeholder="Animal's name" />
-					<span asp-validation-for="Animal.Name" class="text-danger"></span>
-				</div>
+			<div class="form-group">
+				<label asp-for="Animal.Name" class="control-label"></label>
+				<input id="animal-name" asp-for="Animal.Name" class="form-control" placeholder="Animal's name"/>
+				<span asp-validation-for="Animal.Name" class="text-danger"></span>
+			</div>
 
-				<div class="form-group">
-					<label asp-for="Owner.OwnerName" class="control-label"></label>
-					<input asp-for="Owner.OwnerName" placeholder="Owner's name and surname" class="form-control" />
-					<span asp-validation-for="Owner.OwnerName" class="text-danger"></span>
-				</div>
+			<div class="form-group">
+				<label asp-for="Owner.OwnerName" class="control-label"></label>
+				<input asp-for="Owner.OwnerName" placeholder="Owner's name and surname" class="form-control"/>
+				<span asp-validation-for="Owner.OwnerName" class="text-danger"></span>
+			</div>
 
-				<div class="form-group">
-					<label asp-for="Owner.Email" class="control-label"></label>
-					<input asp-for="Owner.Email" placeholder="Email address" class="form-control" />
-					<span asp-validation-for="Owner.Email" class="text-danger"></span>
-				</div>
+			<div class="form-group">
+				<label asp-for="Owner.Email" class="control-label"></label>
+				<input asp-for="Owner.Email" placeholder="Email address" class="form-control"/>
+				<span asp-validation-for="Owner.Email" class="text-danger"></span>
+			</div>
 
-				<div class="form-group">
-					<label asp-for="Owner.Address" class="control-label"></label>
-					<input asp-for="Owner.Address" placeholder="City address" class="form-control" />
-					<span asp-validation-for="Owner.Address" class="text-danger"></span>
-				</div>
+			<div class="form-group">
+				<label asp-for="Owner.Address" class="control-label"></label>
+				<input asp-for="Owner.Address" placeholder="City address" class="form-control"/>
+				<span asp-validation-for="Owner.Address" class="text-danger"></span>
+			</div>
 
-				<div class="form-group">
-					<label asp-for="Employee.EmployeePersonalId" class="control-label"></label>
-					<input asp-for="Employee.EmployeePersonalId" class="form-control" placeholder="Personal ID number" />
-					<span asp-validation-for="Employee.EmployeePersonalId" class="text-danger"></span>
-				</div>
+			<div class="form-group">
+				<label asp-for="Employee.EmployeePersonalId" class="control-label"></label>
+				<input asp-for="Employee.EmployeePersonalId" class="form-control" placeholder="Personal ID number"/>
+				<span asp-validation-for="Employee.EmployeePersonalId" class="text-danger"></span>
+			</div>
 
 			<div class="form-group">
 				<label for="admission-day-input" asp-for="Animal.AdmissionDay" class="control-label"></label>
-				<input id="admission-day-input" asp-for="Animal.AdmissionDay" class="form-control" value="" style="color:black" readonly />
+				<input id="admission-day-input" asp-for="Animal.AdmissionDay" class="form-control" value=""
+				       style="color:black" readonly/>
 				<span asp-validation-for="Animal.AdmissionDay" class="text-danger"></span>
 			</div>
 
 			<div class="form-group">
 				<label for="adoption-day-input" asp-for="Animal.AdoptionDay" class="control-label"></label>
-					<input id="adoption-day-input" asp-for="Animal.AdoptionDay" class="form-control" value="" />
-					<span asp-validation-for="Animal.AdoptionDay" class="text-danger"></span>
-				</div>				
-				
-				<div class="form-group">
-					<input type="submit" value="Adopt" class="btn btn-primary" />
-				</div>					
-			</form>
-
+				<input id="adoption-day-input" asp-for="Animal.AdoptionDay" class="form-control" value=""/>
+				<span asp-validation-for="Animal.AdoptionDay" class="text-danger"></span>
+			</div>
 			
+			<div class="form-group">
+				<input type="submit" value="Adopt" class="btn btn-primary"/>
+			</div>
+		</form>
+
 	</div>
 </div>
 <div>

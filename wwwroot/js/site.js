@@ -10,7 +10,7 @@ const defaultTab = document.getElementById('openDefault');
 if (defaultTab != null) {
     defaultTab.click();
 }
-;
+
 
 function openType(event, typeName) {
     var i, tabcontent, tablinks;
@@ -44,30 +44,36 @@ if (scroller != null) {
 }
 
 const completedTrue = document.getElementById("completedTrue");
-completedTrue.addEventListener("click", function () {
+if(completedTrue != null) {
+    completedTrue.addEventListener("click", function () {
 
-    var inProgressTrue = document.getElementById("inProgressTrue");
-    var inProgressFalse = document.getElementById("inProgressFalse");
+        var inProgressTrue = document.getElementById("inProgressTrue");
+        var inProgressFalse = document.getElementById("inProgressFalse");
 
-    if (completedTrue.checked) {
-        inProgressFalse.checked = true;
+        if (completedTrue.checked) {
+            inProgressFalse.checked = true;
 
-        inProgressFalse.disabled = true;
-        inProgressTrue.disabled = true;
-    }
-})
+            inProgressFalse.disabled = true;
+            inProgressTrue.disabled = true;
+        }
+    })
+}
+
 
 const completedFalse = document.getElementById("completedFalse");
-completedFalse.addEventListener("click", function () {
-    var inProgressTrue = document.getElementById("inProgressTrue");
-    var inProgressFalse = document.getElementById("inProgressFalse");
+if(completedFalse != null){
+    completedFalse.addEventListener("click", function () {
+        var inProgressTrue = document.getElementById("inProgressTrue");
+        var inProgressFalse = document.getElementById("inProgressFalse");
 
-    if (completedFalse.checked) {
+        if (completedFalse.checked) {
 
-        inProgressFalse.disabled = false;
-        inProgressTrue.disabled = false;
-    }
-})
+            inProgressFalse.disabled = false;
+            inProgressTrue.disabled = false;
+        }
+    })
+}
+
 
 container.addEventListener("scroll", e => {
     if (container.scrollTop > 10) {
@@ -80,7 +86,7 @@ container.addEventListener("scroll", e => {
 
 function generateChipNumber() {
     document.getElementById("chip-number-input").value = Math.floor(Math.random() * (99999999 - 11111111 + 1) + 11111111);
-};
+}
 
 
 function submitAddResources(event, itemId, targetCategory) {
@@ -170,5 +176,7 @@ async function moveToDone(assignmentId){
             'Content-type': 'application/json; charset=utf-8'
         }
     });
+    
     location.reload();
 }
+

@@ -19,11 +19,11 @@ html {
 
 
 body {
-    min-height: 100vh;
+    height: 100%;
     margin-bottom: 60px;
     display: grid;
     grid-template-columns: 1fr 6fr;
-    grid-template-rows: 60px 1fr 60px;
+    grid-template-rows: 60px 6fr 60px;
     width: 100%;
     align-content: start;
     background-color: #121212;
@@ -33,17 +33,20 @@ body {
 
 header {
     grid-column: 1 /span 2;
-
+    grid-row: 1;
 }
 
 nav {
     background-color: rgba(255, 255, 255, 0.05);
+    height:60px;
 }
 
 footer {
     grid-column: 1 /span 2;
+    grid-row: 3;
     padding-left: 2em;
     background-color: rgb(31, 31, 31);
+    position:relative !important;
 }
 
 .container {
@@ -52,6 +55,7 @@ footer {
     padding: 20px;
     max-height: 87vh;
     margin-top: 4px;
+    overflow:auto;
 }
 
 .side-menu {
@@ -60,10 +64,11 @@ footer {
     border-right: 3px solid #A3FCB6;
     height: auto;
     min-width: 210px;
+    max-height: 100%;
     background-color: rgba(255, 255, 255, 0.10);
     display: flex;
     justify-content: space-around;
-    margin-top: 4px;
+    overflow: auto;
 }
 
 .side-menu > ul {
@@ -150,11 +155,12 @@ tr:last-of-type:hover td:last-child {
     min-width: 650px;
 }
 
-.form-control {
-    background-color: rgba(255, 255, 255, 0.15);
+.form-control, .select2-container--default, .select2-selection--multiple {
+    background-color: rgba(255, 255, 255, 0.15) !important;
     color: white;
-    font-size: 16px;
-    height: 45px;
+    font-size: 16px !important;
+    height: 45px !important;
+    border-color: rgb(206, 212, 218) !important;
 }
 
 #name-input {
@@ -167,12 +173,12 @@ tr:last-of-type:hover td:last-child {
     opacity: 0.5;
 }
 
-.form-control:focus {
+.form-control:focus, .select2-results__option--highlighted{
     background-color: rgba(255, 255, 255, 0.05);
     color: white;
 }
 
-select option {
+select option, .select2-results__option, .select2-results__option--selected {
     background-color: rgba(18, 18, 18, 0.75);
     color: white;
 }
@@ -340,3 +346,28 @@ select option {
     display:flex;
     justify-content: space-between;
 }
+
+.select2-selection__choice{
+    color:black;
+}
+
+/*
+.select2-container--default .select2-selection--multiple {  
+    
+    background-color: rgba(255, 255, 255, 0.15);
+    color: white;
+    font-size: 16px;
+    height: 45px;
+    border: 1px solid white !important;
+}
+
+.select2-results__option{
+    color: white;
+    background-color: rgba(18, 18, 18, 0.75);
+}
+
+
+.select2-results__option--highlighted
+{
+    background-color: rgba(18, 18, 18, 0.25) !important;
+}*/

@@ -1,6 +1,8 @@
-@model Assignment
+@using Microsoft.CodeAnalysis.Scripting
+@model ShelterHelper.ViewModels.AssignmentViewModel;
 
 @{
+	
 	ViewData["Title"] = "Create";
 	var prioritiesList = new SelectList(new List<SelectListItem>
 	{
@@ -11,38 +13,46 @@
 	}, "Value", "Text");
 }
 
+
 <h1>Create</h1>
 <h4>Add a new assignment</h4>
 <hr/>
 <div class="row">
 	<div class="col-md-4">
-		<form method="post" asp-action="Create">
+		<form asp-action="Create">
 			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 			<div class="form-group">
-				<label asp-for="Title" class="control-label"></label>
-				<input asp-for="Title" class="form-control" placeholder="Insert the title here"/>
-				<span asp-validation-for="Title" class="text-danger"></span>
+				<label asp-for="Assignment.Title" class="control-label"></label>
+				<input asp-for="Assignment.Title" class="form-control" placeholder="Insert the title here"/>
+				<span asp-validation-for="Assignment.Title" class="text-danger"></span>
 			</div>
 			<div class="form-group">
-				<label asp-for="Description" class="control-label"></label>
-				<input asp-for="Description" class="form-control" placeholder="Insert the description here"/>
-				<span asp-validation-for="Description" class="text-danger"></span>
+				<label asp-for="Assignment.Description" class="control-label"></label>
+				<input asp-for="Assignment.Description" class="form-control" placeholder="Insert the description here"/>
+				<span asp-validation-for="Assignment.Description" class="text-danger"></span>
 			</div>
 			<div class="form-group">
-				<label asp-for="Priority" class="control-label"></label>
-				@Html.DropDownList("Priority", prioritiesList, "Select priority level", new { @class = "form-control" })
-				<span asp-validation-for="Priority" class="text-danger"></span>
+				<label asp-for="Assignment.Priority" class="control-label"></label>
+				@Html.DropDownList("Assignment.Priority", prioritiesList, "Select priority level", new { @class = "form-control"})
+				<span asp-validation-for="Assignment.Priority" class="text-danger"></span>
 			</div>
 			<div class="form-group">
-				<label asp-for="CreatorId" class="control-label"></label>
-				<input asp-for="CreatorId" class="form-control" type="number" placeholder="Insert your ID here"/>
-				<span asp-validation-for="CreatorId" class="text-danger"></span>
+				<label asp-for="Assignment.CreatorId" class="control-label"></label>
+				<input asp-for="Assignment.CreatorId" class="form-control" type="number" placeholder="Insert your ID here"/>
+				<span asp-validation-for="Assignment.CreatorId" class="text-danger"></span>
 			</div>
 			<div class="form-group">
-				<label asp-for="CreationDate" class="control-label"></label>
-				<input asp-for="CreationDate" class="form-control" type="date" placeholder="Insert the title here"/>
-				<span asp-validation-for="CreationDate" class="text-danger"></span>
+				<label asp-for="Assignment.CreationDate" class="control-label"></label>
+				<input asp-for="Assignment.CreationDate" class="form-control" type="date"/>
+				<span asp-validation-for="Assignment.CreationDate" class="text-danger"></span>
 			</div>
+			
+			<div class="form-group">
+				<label asp-for="EmployeesList" class="control-label">Assigned Employees</label>
+				@Html.DropDownListFor(e => e.Employee.EmployeeId, new SelectList(Model.EmployeesList, nameof(Employee.EmployeeId), (nameof(Employee.EmployeeName))), new {@class = "form-control", id = "employee-multiselect", multiple = "multiple"})
+				<span asp-validation-for="EmployeesList" class="text-danger"></span>
+			</div>
+			
 			<div class="form-group">
 				<input type="submit" value="Create" class="btn btn-primary"/>
 			</div>
@@ -52,3 +62,8 @@
 <div>
 	<a asp-action="Index">Back to List</a>
 </div>
+<script>
+	$(document).ready(function() {
+		$('#employee-multiselect').select2();
+	});
+</script>

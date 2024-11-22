@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShelterHelper.Models;
+using ShelterHelper.ViewModels;
 
 namespace ShelterHelper.Controllers
 {
@@ -9,6 +10,7 @@ namespace ShelterHelper.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
         private const string _assignmentsEndpoint = "api/assignments/";
+        private const string _employeesEndpoint = "api/employees";
 
         public AssignmentsController(ILogger<HomeController> logger, IHttpClientFactory httpClientFactory)
         {
@@ -33,26 +35,38 @@ namespace ShelterHelper.Controllers
         }
 
         // GET: AssignmentsController/Create
-        public ActionResult Create()
+        public async Task<ActionResult> Create()
         {
-            return View();
+            var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
+            var response = await httpClient.GetAsync(_employeesEndpoint);
+
+            var assignmentViewModel = new AssignmentViewModel();
+
+            if (response.IsSuccessStatusCode)
+            {
+                IEnumerable<Employee> employees = await response.Content.ReadAsAsync<IEnumerable<Employee>>();
+
+                assignmentViewModel.EmployeesList = employees.ToList();
+            }
+            return View(assignmentViewModel);
         }
 
         // POST: AssignmentsController/Create
         [HttpPost, ActionName("Create")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CreateConfirmed(Assignment assignment)
+        public async Task<ActionResult> CreateConfirmed(AssignmentViewModel assignmentViewModel)
         {
             var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
+            
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _logger.LogDebug($"Posting new assignment: {assignment.Title} data to {_assignmentsEndpoint}.");
-                    var response = await httpClient.PostAsJsonAsync(_assignmentsEndpoint, assignment);
+                    _logger.LogDebug($"Posting new assignment: {assignmentViewModel.Assignment.Title} data to {_assignmentsEndpoint}.");
+                    var response = await httpClient.PostAsJsonAsync(_assignmentsEndpoint, assignmentViewModel);
                     response.EnsureSuccessStatusCode();
                     _logger.LogDebug(
-                        $"Posted new assignment: {assignment.Title} data to {_assignmentsEndpoint} successfully");
+                        $"Posted new assignment: {assignmentViewModel.Assignment.Title} data to {_assignmentsEndpoint} successfully");
                     TempData["Success"] = "Success, database updated.";
                 }
                 catch (Exception e)
@@ -67,7 +81,7 @@ namespace ShelterHelper.Controllers
                 TempData["Error"] = "Error, ModelState invalid.";
             }
 
-            return View(assignment);
+            return View(assignmentViewModel);
         }
 
         // GET: AssignmentsController/Edit/5

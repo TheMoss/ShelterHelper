@@ -5,10 +5,10 @@ namespace ShelterHelper.Models
     public class Assignment
     {
         public int? AssignmentId { get; set; }
-        
-        [Required]
-        [StringLength(100)]
-        public string Title { get; set; }
+
+        [Required] 
+        [StringLength(100)] 
+        public string Title { get; set; } = null!;
         
         [StringLength(300)]
         public string? Description { get; set; }

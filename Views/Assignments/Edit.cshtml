@@ -1,4 +1,4 @@
-@model Assignment;
+@model ShelterHelper.ViewModels.AssignmentViewModel;
 
 @{
 	ViewData["Title"] = "Edit";
@@ -18,48 +18,56 @@
 	<div class="col-md-4">
 		<form asp-action="Edit" method="post">
 			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-			<input type="hidden" asp-for="AssignmentId"/>
+			<input type="hidden" asp-for="Assignment.AssignmentId"/>
 			<div class="form-group">
-				<label asp-for="Title" class="control-label"></label>
-				<input asp-for="Title" class="form-control"/>
-				<span asp-validation-for="Title" class="text-danger"></span>
+				<label asp-for="Assignment.Title" class="control-label"></label>
+				<input asp-for="Assignment.Title" class="form-control"/>
+				<span asp-validation-for="Assignment.Title" class="text-danger"></span>
 			</div>
 			<div class="form-group">
-				<label asp-for="Description" class="control-label"></label>
-				<input asp-for="Description" class="form-control"/>
-				<span asp-validation-for="Description" class="text-danger"></span>
+				<label asp-for="Assignment.Description" class="control-label"></label>
+				<input asp-for="Assignment.Description" class="form-control"/>
+				<span asp-validation-for="Assignment.Description" class="text-danger"></span>
 			</div>
 			<div class="form-group">
-				<label asp-for="Priority" class="control-label"></label>
+				<label asp-for="Assignment.Priority" class="control-label"></label>
 				@Html.DropDownList("Priority", prioritiesList, "Select priority level", new { @class = "form-control" })
 
-				<span asp-validation-for="Priority" class="text-danger"></span>
+				<span asp-validation-for="Assignment.Priority" class="text-danger"></span>
 			</div>
 			<div class="form-group">
-				<label asp-for="CreatorId" class="control-label"></label>
-				<input asp-for="CreatorId" class="form-control"/>
-				<span asp-validation-for="CreatorId" class="text-danger"></span>
+				<label asp-for="Assignment.CreatorId" class="control-label"></label>
+				<input asp-for="Assignment.CreatorId" class="form-control"/>
+				<span asp-validation-for="Assignment.CreatorId" class="text-danger"></span>
 			</div>
 			<div class="form-group">
-				<label asp-for="CreationDate" class="control-label"></label>
-				<input asp-for="CreationDate" class="form-control"/>
-				<span asp-validation-for="CreationDate" class="text-danger"></span>
+				<label asp-for="Assignment.CreationDate" class="control-label"></label>
+				<input asp-for="Assignment.CreationDate" class="form-control"/>
+				<span asp-validation-for="Assignment.CreationDate" class="text-danger"></span>
 			</div>
+
 			<div class="form-group">
-				<label asp-for="IsCompleted" class="control-label"></label>
-				<input type="radio" asp-for="IsCompleted" value="true" id="completedTrue"/>
+				<label asp-for="EmployeesList" class="control-label">Assigned Employees</label>
+				@Html.DropDownListFor(model => model.SelectedEmployeesIds, new SelectList(Model.EmployeesList, nameof(Employee.EmployeeId), (nameof(Employee.EmployeeName))), new { @class = "form-control", id = "employee-multiselect", multiple = "multiple" })
+				@* the controller will by default pick up only the first selection from the dropdown, a script has to be used to bypass that and send all the selected options to the next method *@
+				<span asp-validation-for="EmployeesList" class="text-danger"></span>
+			</div>
+
+			<div class="form-group">
+				<label asp-for="Assignment.IsCompleted" class="control-label"></label>
+				<input type="radio" asp-for="Assignment.IsCompleted" value="true" id="completedTrue"/>
 				<label for="completedTrue">Completed</label>
-				<input type="radio" asp-for="IsCompleted" value="false" id="completedFalse"/>
+				<input type="radio" asp-for="Assignment.IsCompleted" value="false" id="completedFalse"/>
 				<label for="completedFalse">Not completed</label>
-				<span asp-validation-for="IsCompleted" class="text-danger"></span>
+				<span asp-validation-for="Assignment.IsCompleted" class="text-danger"></span>
 			</div>
 			<div class="form-group">
-				<label asp-for="IsInProgress" class="control-label"></label>
-				<input type="radio" asp-for="IsInProgress" value="true" id="inProgressTrue"/>
+				<label asp-for="Assignment.IsInProgress" class="control-label"></label>
+				<input type="radio" asp-for="Assignment.IsInProgress" value="true" id="inProgressTrue"/>
 				<label for="inProgressTrue">In progress</label>
-				<input type="radio" asp-for="IsInProgress" value="false" id="inProgressFalse"/>
+				<input type="radio" asp-for="Assignment.IsInProgress" value="false" id="inProgressFalse"/>
 				<label for="inProgressFalse">Not in progress</label>
-				<span asp-validation-for="IsInProgress" class="text-danger"></span>
+				<span asp-validation-for="Assignment.IsInProgress" class="text-danger"></span>
 			</div>
 			<div class="form-group">
 				<input type="submit" value="Save changes" class="btn btn-primary"/>
@@ -77,3 +85,39 @@
 		await Html.RenderPartialAsync("_ValidationScriptsPartial");
 	}
 }
+
+<script>
+	$(document).ready(function () {
+		const completedTrue = document.getElementById("completedTrue");
+		if (completedTrue != null) {
+			completedTrue.addEventListener("click", function () {
+
+				var inProgressTrue = document.getElementById("inProgressTrue");
+				var inProgressFalse = document.getElementById("inProgressFalse");
+
+				if (completedTrue.checked === true) {
+					inProgressFalse.checked = true;
+
+					inProgressFalse.disabled = true;
+					inProgressTrue.disabled = true;
+				}
+			})
+		}
+
+
+		const completedFalse = document.getElementById("completedFalse");
+		if (completedFalse != null) {
+			completedFalse.addEventListener("click", function () {
+				var inProgressTrue = document.getElementById("inProgressTrue");
+				var inProgressFalse = document.getElementById("inProgressFalse");
+
+				if (completedFalse.checked === true) {
+
+					inProgressFalse.disabled = false;
+					inProgressTrue.disabled = false;
+				}
+			})
+		}
+		$('#employee-multiselect').select2();
+	});
+</script>

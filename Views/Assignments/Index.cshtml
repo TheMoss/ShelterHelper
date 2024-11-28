@@ -1,4 +1,5 @@
-﻿@model IEnumerable<ShelterHelper.Models.Assignment>
+﻿@using Microsoft.EntityFrameworkCore.Storage.ValueConversion
+@model IEnumerable<ShelterHelper.Models.Assignment>
 
 
 @*adding editing deleting in one window*@
@@ -22,13 +23,30 @@
 		new Assignment { Title = "Another example", Description = "Another example description", Priority = 1, CreatorId = 34567 }
 	};
 }
+@functions{
+
+	string PriorityColor(int priority)
+	{
+		switch (priority)
+		{
+			case 0:
+				return "green";
+			case 1:
+				return "yellow";
+			case 2:
+				return "orange";
+			case 3:
+				return "red";
+				default: return "grey";
+		}
+
+	}
+
+}
 
 <div class="contents">
 	<h1>Assignments</h1>
 	<hr/>
-	<span>
-		<a asp-action="Create">Add a new assignment</a>
-	</span>
 
 	<div class="board">
 		<ol style="display: grid; grid-template-columns: 1fr 1fr 1fr; max-height: 600px;">
@@ -38,14 +56,41 @@
 					<hr/>
 					<div class="assignments-column">
 						<ol>
+							
+							<li class="todo-item">
+								<div class="todo-title">
+									<a>
+										Collapse test
+									</a>
+								</div>
+								<div class="todo-description">
+									Description sample
+								</div>
+								<div class="todo-collapsible">
+									20.10.2020
+									Mark, Elisa, Barney
+								</div>
+								<span class="assignment-controls">
+									<button >Start</button>
+									<a asp-action="Edit" >Edit</a>
+									<a asp-action="Delete" >Delete</a>
+								</span>
+							</li>
 							@foreach (var todo in Model.Where(a => a is { IsInProgress: false, IsCompleted: false }))
 							{
 								<li class="todo-item">
-									<a>
-										@todo.Title
-									</a>
+									<div class="todo-title">
+										<a>
+											@todo.Title
+										</a>
+										<div  class="priority-circle" style="background-color:@PriorityColor(@todo.Priority)"></div>
+									</div>
 									<div class="todo-description">
 										@todo.Description
+									</div>
+									<div class="todo-collapsible">
+										@todo.CreationDate
+										@*AssignedEmployees*@
 									</div>
 									<span class="assignment-controls">
 										<button onclick="moveToDoing(@todo.AssignmentId)">Start</button>
@@ -55,6 +100,9 @@
 								</li>
 							}
 						</ol>
+						<div>
+							<button type="button" onclick="location.href='@Url.Action("Create")'">Add a new assignment</button>
+						</div>
 					</div>
 				</div>
 			</li>
@@ -67,11 +115,18 @@
 							@foreach (var todo in Model.Where(a => a is { IsInProgress: true, IsCompleted: false }))
 							{
 								<li class="todo-item">
-									<a>
-										@todo.Title
-									</a>
+									<div class="todo-title">
+										<a>
+											@todo.Title
+										</a>
+										<div class="priority-circle" style="background-color:@PriorityColor(@todo.Priority)"></div>
+									</div>
 									<div class="todo-description">
 										@todo.Description
+									</div>
+									<div class="todo-collapsible">
+										@todo.CreationDate
+										@*AssignedEmployees*@
 									</div>
 									<span class="assignment-controls">
 										<button onclick="moveToDone(@todo.AssignmentId)">Complete</button>
@@ -93,11 +148,18 @@
 							@foreach (var todo in Model.Where(a => a is { IsInProgress: false, IsCompleted: true }))
 							{
 								<li class="todo-item">
-									<a>
-										@todo.Title
-									</a>
+									<div class="todo-title">
+										<a>
+											@todo.Title
+										</a>
+										<div class="priority-circle" style="background-color:@PriorityColor(@todo.Priority)"></div>
+									</div>
 									<div class="todo-description">
 										@todo.Description
+									</div>
+									<div class="todo-collapsible">
+										@todo.CreationDate
+										@*AssignedEmployees*@
 									</div>
 									<span class="assignment-controls">
 										<a asp-action="Edit" asp-route-id="@todo.AssignmentId">Edit</a>
@@ -125,3 +187,20 @@
 		<p>@TempData["Error"].ToString()</p>
 	</div>
 }
+<script>
+	const todos = document.getElementsByClassName("todo-item");
+	var i = 0;
+	for (i = 0; i < todos.length; i++) {
+		todos[i].addEventListener("click", function () {
+				var collapsible = this.childNodes[5];
+				
+					if (collapsible.style.display === "block") {
+						collapsible.style.display = "none"
+					} else {
+						collapsible.style.display = "block"
+					}			
+				
+			}
+		)
+		}	
+</script>

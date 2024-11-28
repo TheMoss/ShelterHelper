@@ -43,37 +43,6 @@ if (scroller != null) {
 
 }
 
-const completedTrue = document.getElementById("completedTrue");
-if(completedTrue != null) {
-    completedTrue.addEventListener("click", function () {
-
-        var inProgressTrue = document.getElementById("inProgressTrue");
-        var inProgressFalse = document.getElementById("inProgressFalse");
-
-        if (completedTrue.checked) {
-            inProgressFalse.checked = true;
-
-            inProgressFalse.disabled = true;
-            inProgressTrue.disabled = true;
-        }
-    })
-}
-
-
-const completedFalse = document.getElementById("completedFalse");
-if(completedFalse != null){
-    completedFalse.addEventListener("click", function () {
-        var inProgressTrue = document.getElementById("inProgressTrue");
-        var inProgressFalse = document.getElementById("inProgressFalse");
-
-        if (completedFalse.checked) {
-
-            inProgressFalse.disabled = false;
-            inProgressTrue.disabled = false;
-        }
-    })
-}
-
 
 container.addEventListener("scroll", e => {
     if (container.scrollTop > 10) {

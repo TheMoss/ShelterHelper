@@ -6,6 +6,7 @@
 
 <h1>Edit</h1>
 
+<h4>Animal</h4>
 <hr/>
 <div class="row">
 	<div class="col-md-4">
@@ -34,7 +35,16 @@
 			
 			<div class="form-group">
 				<label asp-for="Sex" class="control-label"></label>
-				<input asp-for="Sex" class="form-control"/>
+				<div class="form-group">
+					<select asp-for="Sex" class="form-control">
+						<option value="" disabled selected hidden>Select option</option>
+						<option value="Unknown">Unknown</option>
+						<option value="Spayed female">Spayed female</option>
+						<option value="Intact female">Intact female</option>
+						<option value="Spayed male">Spayed male</option>
+						<option value="Intact male">Intact male</option>
+					</select>
+				</div>
 				<span asp-validation-for="Sex" class="text-danger"></span>
 			</div>
 			

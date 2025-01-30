@@ -1,4 +1,20 @@
-﻿function closeModal(selector) {
+﻿async function getSelectedEmployees(assignmentId){
+    const url = `https://localhost:7147/api/EmployeesAssignments/Search?assignmentId=${assignmentId}`;
+    let assignedEmployees =[];
+    try {
+        const response = await fetch(url);
+        if (response.ok){
+            const assignmentJson = await response.json();
+            for (let i =0; i < assignmentJson.length; i++){
+                assignedEmployees.push(assignmentJson[i].employee.employeeId);
+            }
+            return assignedEmployees;
+        }
+    }
+    catch(error)
+    {console.error(error.message)}
+}
+function closeModal(selector) {
     $(selector).modal("hide");
 }
 
@@ -57,57 +73,44 @@ function generateChipNumber() {
     document.getElementById("chip-number-input").value = Math.floor(Math.random() * (99999999 - 11111111 + 1) + 11111111);
 }
 
-
-function submitAddResources(event, itemId, targetCategory) {
+async function addResourcesHelper(event, resourceType, itemId, inputValue){
     event.preventDefault();
-
-    let itemName = event.currentTarget.querySelector("p").innerHTML;
-    let input = event.currentTarget.querySelector("input")
-    let inputValue = input.value;
-    console.log(itemId, itemName, inputValue);
-
-    switch (targetCategory) {
-        case 'diet':
-            addResourcesDiet(event, itemId, inputValue);
-            break;
-        case 'bedding':
-            break;
-        case 'toy':
-            break;
-        case 'accessory':
-            break;
+    const url = `https://localhost:7147/api/resources/${resourceType}/${itemId}`;
+    let updatedQuantity;
+    if(inputValue < 1){
+        throw new Error('The quantity has to be larger than 0.');
     }
-    input.value = '';
-}
+    if (resourceType === 'accessories' || resourceType === 'beddings' || resourceType === 'diets' || resourceType === 'toys')
+    {
+        await fetch(url)
+            .then(response => response.json())
+            .then(data =>{
+                if(resourceType === 'beddings' || resourceType === 'diets'){
+                    updatedQuantity = data.quantity_kg + parseInt(inputValue);
+                } else if (resourceType === 'accessories' || resourceType === 'toys') {
+                    updatedQuantity = data.quantity + parseInt(inputValue);
+                }
+                })
+            .catch(error => console.error(`Error fetching data: ${error}`));
 
-async function addResourcesDiet(event, itemId, inputValue) {
-    const dietUrl = `https://localhost:7147/api/resources/diets/${itemId}`;
-    let updatedQuantity = 0;
-    await fetch(dietUrl)
-        .then(response => {
-            return response.json()
+        await fetch(url, {
+            method: "PATCH",
+            body: JSON.stringify([{
+                "op": "replace",
+                "path": resourceType === 'beddings' || resourceType === 'diets' ? 'quantity_kg' : 'quantity',
+                "value": updatedQuantity.toString()
+            }]),
+            headers: {
+                'Content-type': 'application/json; charset=utf-8'
+            }
         })
-        .then(data => {
-            updatedQuantity = data.quantity_kg + parseInt(inputValue);
-            console.log(`Updated quantity: ${updatedQuantity}`);
-        })
-        .catch(error => console.error(`Error fetching data: ${error}`));
-
-    await fetch(dietUrl, {
-        method: "PATCH",
-        body: JSON.stringify([{
-            "op": "replace",
-            "path": "quantity_kg",
-            "value": updatedQuantity.toString()
-        }]),
-        headers: {
-            'Content-type': 'application/json; charset=utf-8'
-        }
-    })
-        .then(response => response.json())
-        .then(json => console.log(json))
-        .catch(error => console.error(`Error putting data: ${error}`));
-
+            .then(response => response.json())
+            .then(json => console.log(json))
+            .catch(error => console.error(`Error putting data: ${error}`));
+    }
+    else{
+        throw new Error(`${resourceType} is not a valid resource type.`);
+    }
 }
 
 async function moveToDoing(assignmentId){

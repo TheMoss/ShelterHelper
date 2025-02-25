@@ -7,6 +7,6 @@ public class AssignmentViewModel
     public Assignment? Assignment { get; set; }
     public Employee? Employee { get; set; }
 
-    public List<Employee>? EmployeesList { get; set; } = new();
+    public List<Employee>? EmployeesList { get; set; }
     public List<int>? SelectedEmployeesIds { get; set; }
 }

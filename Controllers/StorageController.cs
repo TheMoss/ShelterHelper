@@ -370,7 +370,7 @@ public class StorageController : Controller
             TempData["Error"] = "Error, ModelState invalid.";
         }
 
-        return RedirectToAction("Create");
+        return RedirectToAction("Index");
     }
 
     public async Task<IActionResult> EditAccessory(int? id)
@@ -531,7 +531,7 @@ public class StorageController : Controller
             TempData["Error"] = "Error, something went wrong.";
         }
 
-        return RedirectToAction("Create");
+        return RedirectToAction("Index");
     }
 
     public async Task<IActionResult> EditBedding(int? id)
@@ -691,7 +691,7 @@ public class StorageController : Controller
             Console.WriteLine(e);
         }
 
-        return RedirectToAction("Create");
+        return RedirectToAction("Index");
     }
 
     public async Task<IActionResult> EditDiet(int? id)
@@ -835,7 +835,7 @@ public class StorageController : Controller
             TempData["Error"] = "Error, something went wrong.";
         }
 
-        return RedirectToAction("Create");
+        return RedirectToAction("Index");
     }
 
     public async Task<IActionResult> EditToy(int? id)

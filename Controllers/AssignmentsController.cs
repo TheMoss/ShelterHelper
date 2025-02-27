@@ -10,8 +10,8 @@ namespace ShelterHelper.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
         private const string _assignmentsEndpoint = "api/assignments/";
-        private const string _employeesEndpoint = "api/employees";
-        private const string _employeesAssignmentsEndpoint = "api/employees-assignments";
+        private const string _employeesEndpoint = "api/employee";
+        private const string _employeesAssignmentsEndpoint = "api/EmployeesAssignments";
 
         public AssignmentsController(ILogger<HomeController> logger, IHttpClientFactory httpClientFactory)
         {
@@ -95,20 +95,18 @@ namespace ShelterHelper.Controllers
                     assignment = await response.Content.ReadAsAsync<Assignment>();
                 }
 
-                
-                var getEmployeesResponse = await httpClient.GetAsync(_employeesEndpoint);
-
-                if (getEmployeesResponse.IsSuccessStatusCode)
+                var getAllEmployeesResponse = await httpClient.GetAsync(_employeesEndpoint);
+                if (getAllEmployeesResponse.IsSuccessStatusCode)
                 {
-                    IEnumerable<Employee> employees =
-                        await getEmployeesResponse.Content.ReadAsAsync<IEnumerable<Employee>>();
+                    IEnumerable<Employee> allEmployees =
+                        await getAllEmployeesResponse.Content.ReadAsAsync<IEnumerable<Employee>>();
 
-                    if (employees != null)
+                    if (allEmployees != null)
                     {
-                        assignmentViewModel.EmployeesList = employees.ToList();
+                        assignmentViewModel.EmployeesList = allEmployees.ToList();
                     }
                 }
-
+                
                 assignmentViewModel.Assignment = assignment;
             }
             catch (Exception e)
@@ -122,10 +120,7 @@ namespace ShelterHelper.Controllers
         // POST: AssignmentsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(int id,
-            [Bind(
-                "Assignment.AssignmentId, Assignment.Title, Assignment.Description, Assignment.Priority, Assignment.CreatorId, Assignment.CreationDate, Assignment.IsCompleted, Assignment.IsInProgress, SelectedEmployeesIds")]
-            AssignmentViewModel assignmentViewModel)
+        public async Task<ActionResult> Edit([FromForm] AssignmentViewModel assignmentViewModel)
         {
             var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
 
@@ -133,35 +128,51 @@ namespace ShelterHelper.Controllers
             {
                 try
                 {
-                    HttpResponseMessage response =
-                        await httpClient.PostAsJsonAsync(
-                            $"{_assignmentsEndpoint}{assignmentViewModel.Assignment.AssignmentId}",
-                            assignmentViewModel);
+                    //post edited assignment
+                    var editedAssignment = new Assignment()
+                    {
+                        AssignmentId = assignmentViewModel.Assignment.AssignmentId,
+                        CreationDate = assignmentViewModel.Assignment.CreationDate,
+                        CreatorId = assignmentViewModel.Assignment.CreatorId,
+                        Description = assignmentViewModel.Assignment.Description,
+                        IsCompleted = assignmentViewModel.Assignment.IsCompleted,
+                        IsInProgress = assignmentViewModel.Assignment.IsInProgress,
+                        Priority = assignmentViewModel.Assignment.Priority,
+                        Title = assignmentViewModel.Assignment.Title
+                    };
+                    var response = await httpClient.PostAsJsonAsync($"{_assignmentsEndpoint}{assignmentViewModel.Assignment.AssignmentId}", editedAssignment);
                     response.EnsureSuccessStatusCode();
 
-                    if (assignmentViewModel.SelectedEmployeesIds != null)
+                    if (assignmentViewModel.SelectedEmployeesIds.Count != null)
                     {
-                        var employeesAssignmentsList = new List<EmployeesAssignments>();
                         foreach (var employeeId in assignmentViewModel.SelectedEmployeesIds)
                         {
-                            new EmployeesAssignments()
+                            var employeeAssignment = new EmployeesAssignments()
                             {
-                                AssignmentId = id,
+                                AssignmentId = assignmentViewModel.Assignment.AssignmentId,
                                 EmployeeId = employeeId
                             };
+                            var employeesAssignmentsResponse =
+                                await httpClient.PostAsJsonAsync($"{_employeesAssignmentsEndpoint}",
+                                    employeeAssignment);
+                            employeesAssignmentsResponse.EnsureSuccessStatusCode();
+                            _logger.LogInformation("Successfully posted {employeeAssignment} to EmployeesAssignments table", employeeAssignment);
                         }
+                        
+                    }
 
-                        var employeesAssignmentsResponse =
-                            await httpClient.PostAsJsonAsync($"{_employeesAssignmentsEndpoint}",
-                                employeesAssignmentsList);
-                        employeesAssignmentsResponse.EnsureSuccessStatusCode();
+                    else {
+                        //TODO: post delete no longer assigned people 
+                        //get all pairs assigned to task, delete those not mentioned
+                        //or ?
                     }
 
                     TempData["Success"] = "Edited successfully.";
-                    return RedirectToAction("Index");
+                    
                 }
                 catch (Exception e)
                 {
+                    TempData["Error"] = "Failure, check the console for details.";
                     Console.WriteLine(e);
                 }
             }
@@ -169,8 +180,7 @@ namespace ShelterHelper.Controllers
             {
                 TempData["Error"] = "Failed to edit.";
             }
-
-            return View(assignmentViewModel);
+            return RedirectToAction("Index");
         }
 
         // GET: AssignmentsController/Delete/5

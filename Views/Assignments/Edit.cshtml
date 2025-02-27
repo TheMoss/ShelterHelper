@@ -2,7 +2,13 @@
 
 @{
 	ViewData["Title"] = "Edit";
-	
+	var prioritiesList = new SelectList(new List<SelectListItem>
+	{
+		new SelectListItem { Text = "Low", Value = "0" },
+		new SelectListItem { Text = "Medium", Value = "1" },
+		new SelectListItem { Text = "High", Value = "2" },
+		new SelectListItem { Text = "Very high", Value = "3" }
+	}, "Value", "Text");
 }
 
 <h1>Edit</h1>
@@ -26,7 +32,8 @@
 			</div>
 			<div class="form-group">
 				<label asp-for="Assignment.Priority" class="control-label"></label>
-				@Html.DropDownListFor(model => model.Assignment.Priority, new SelectList(Model.Assignment.PrioritiesSelectList, "Value", "Text"), "Select priority level", new { @class = "form-control" })
+				@Html.DropDownListFor(model=> model.Assignment.Priority, prioritiesList, "Select priority level", new { @class = "form-control" })
+
 				<span asp-validation-for="Assignment.Priority" class="text-danger"></span>
 			</div>
 			<div class="form-group">
@@ -80,7 +87,7 @@
 }
 
 <script>
-	$(document).ready(async function () {
+	$(document).ready(function () {
 		const completedTrue = document.getElementById("completedTrue");
 		if (completedTrue != null) {
 			completedTrue.addEventListener("click", function () {
@@ -111,9 +118,6 @@
 				}
 			})
 		}
-		
-		const idsSelectedForAssignment = await getSelectedEmployees(document.getElementById("Assignment_AssignmentId").value);
-		$('#employee-multiselect').select2().val(idsSelectedForAssignment).trigger('change');
+		$('#employee-multiselect').select2();
 	});
-	
 </script>

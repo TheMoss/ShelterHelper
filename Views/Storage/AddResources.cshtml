@@ -23,7 +23,7 @@
 				@foreach (var item in Model.DietsList)
 				{
 					<li>
-						<form onsubmit="submitAddResources(event, @item.DietId, 'diet')">
+						<form onsubmit="addResourcesHelper(event, 'diets', @item.DietId, event.target[0].value)">
 							<p>@item.DietName</p>
 							<div>
 								<input required min=1 class="form-control" type="number"
@@ -46,7 +46,7 @@
 				@foreach (var item in Model.BeddingsList)
 				{
 					<li>
-						<form onsubmit="submitAddResources(event, @item.BeddingId)">
+						<form onsubmit="addResourcesHelper(event, 'beddings', @item.BeddingId, event.target[0].value)">
 							<p>@item.BeddingName</p>
 							<div>
 								<input required min=1 class="form-control" type="number"
@@ -69,7 +69,7 @@
 				@foreach (var item in Model.ToysList)
 				{
 					<li value=@item.ToyId>
-						<form>
+						<form onsubmit="addResourcesHelper(event, 'toys', @item.ToyId, event.target[0].value)">
 							<p>@item.ToyName</p>
 							<div>
 								<input required min=1 class="form-control" type="number"
@@ -92,7 +92,7 @@
 				@foreach (var item in Model.AccessoriesList)
 				{
 					<li value=@item.AccessoryId>
-						<form>
+						<form onsubmit="addResourcesHelper(event, 'accessories', @item.AccessoryId, event.target[0].value)">
 							<p>@item.AccessoryName</p>
 							<div>
 								<input required min=1 class="form-control" type="number"
@@ -110,3 +110,8 @@
 </div>
 
 <button type="button" id="scroller">Scroll to top</button>
+<script>
+	window.addEventListener('load',function (){
+	document.getElementById("openDefault").click()
+	})
+</script>

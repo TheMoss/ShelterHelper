@@ -1,19 +1,20 @@
-﻿async function getSelectedEmployees(assignmentId){
+﻿async function getSelectedEmployees(assignmentId) {
     const url = `https://localhost:7147/api/EmployeesAssignments/Search?assignmentId=${assignmentId}`;
-    let assignedEmployees =[];
+    let assignedEmployees = [];
     try {
         const response = await fetch(url);
-        if (response.ok){
+        if (response.ok) {
             const assignmentJson = await response.json();
-            for (let i =0; i < assignmentJson.length; i++){
-                assignedEmployees.push(assignmentJson[i].employee.employeeId);
+            for (let i = 0; i < assignmentJson.length; i++) {
+                assignedEmployees.push(assignmentJson[i].employeeId);
             }
             return assignedEmployees;
         }
+    } catch (error) {
+        console.error(error.message)
     }
-    catch(error)
-    {console.error(error.message)}
 }
+
 function closeModal(selector) {
     $(selector).modal("hide");
 }
@@ -21,12 +22,6 @@ function closeModal(selector) {
 function openModal(selector) {
     $(selector).modal("show");
 }
-
-const defaultTab = document.getElementById('openDefault');
-if (defaultTab != null) {
-    defaultTab.click();
-}
-
 
 function openType(event, typeName) {
     var i, tabcontent, tablinks;
@@ -73,24 +68,23 @@ function generateChipNumber() {
     document.getElementById("chip-number-input").value = Math.floor(Math.random() * (99999999 - 11111111 + 1) + 11111111);
 }
 
-async function addResourcesHelper(event, resourceType, itemId, inputValue){
+async function addResourcesHelper(event, resourceType, itemId, inputValue) {
     event.preventDefault();
     const url = `https://localhost:7147/api/resources/${resourceType}/${itemId}`;
     let updatedQuantity;
-    if(inputValue < 1){
+    if (inputValue < 1) {
         throw new Error('The quantity has to be larger than 0.');
     }
-    if (resourceType === 'accessories' || resourceType === 'beddings' || resourceType === 'diets' || resourceType === 'toys')
-    {
+    if (resourceType === 'accessories' || resourceType === 'beddings' || resourceType === 'diets' || resourceType === 'toys') {
         await fetch(url)
             .then(response => response.json())
-            .then(data =>{
-                if(resourceType === 'beddings' || resourceType === 'diets'){
+            .then(data => {
+                if (resourceType === 'beddings' || resourceType === 'diets') {
                     updatedQuantity = data.quantity_kg + parseInt(inputValue);
                 } else if (resourceType === 'accessories' || resourceType === 'toys') {
                     updatedQuantity = data.quantity + parseInt(inputValue);
                 }
-                })
+            })
             .catch(error => console.error(`Error fetching data: ${error}`));
 
         await fetch(url, {
@@ -107,48 +101,46 @@ async function addResourcesHelper(event, resourceType, itemId, inputValue){
             .then(response => response.json())
             .then(json => console.log(json))
             .catch(error => console.error(`Error putting data: ${error}`));
-    }
-    else{
+    } else {
         throw new Error(`${resourceType} is not a valid resource type.`);
     }
 }
 
-async function moveToDoing(assignmentId){
+async function moveToDoing(assignmentId) {
     const assignmentsUrl = `https://localhost:7147/api/assignments/${assignmentId}`;
     await fetch(assignmentsUrl, {
         method: "PATCH",
         body: JSON.stringify([{
-            "op" : "replace",
-            "path" : "isInProgress",
-            "value" : "true"
+            "op": "replace",
+            "path": "isInProgress",
+            "value": "true"
         }]),
         headers: {
             'Content-type': 'application/json; charset=utf-8'
         }
     });
-    
+
     location.reload();
 }
 
-async function moveToDone(assignmentId){
+async function moveToDone(assignmentId) {
     const assignmentsUrl = `https://localhost:7147/api/assignments/${assignmentId}`;
     await fetch(assignmentsUrl, {
         method: "PATCH",
         body: JSON.stringify([{
-            "op" : "replace",
-            "path" : "isInProgress",
-            "value" : "false"
+            "op": "replace",
+            "path": "isInProgress",
+            "value": "false"
         },
             {
-                "op" : "replace",
-                "path" : "isCompleted",
-                "value" : "true"  
+                "op": "replace",
+                "path": "isCompleted",
+                "value": "true"
             }]),
         headers: {
             'Content-type': 'application/json; charset=utf-8'
         }
     });
-    
+
     location.reload();
 }
-

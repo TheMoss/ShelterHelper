@@ -10,8 +10,9 @@ namespace ShelterHelper.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
         private const string _assignmentsEndpoint = "api/assignments/";
-        private const string _employeesEndpoint = "api/employees";
-        private const string _employeesAssignmentsEndpoint = "api/employees-assignments";
+        private const string _employeesEndpoint = "api/employee/";
+        private const string _employeesAssignmentsEndpoint = "api/EmployeesAssignments/";
+        private const string _employeesAssignmentSearchEndpoint = "api/EmployeesAssignments/search?assignmentId=";
 
         public AssignmentsController(ILogger<HomeController> logger, IHttpClientFactory httpClientFactory)
         {
@@ -96,16 +97,16 @@ namespace ShelterHelper.Controllers
                 }
 
                 
-                var getEmployeesResponse = await httpClient.GetAsync(_employeesEndpoint);
+                var getAllEmployeesResponse = await httpClient.GetAsync(_employeesEndpoint);
 
-                if (getEmployeesResponse.IsSuccessStatusCode)
+                if (getAllEmployeesResponse.IsSuccessStatusCode)
                 {
-                    IEnumerable<Employee> employees =
-                        await getEmployeesResponse.Content.ReadAsAsync<IEnumerable<Employee>>();
+                    IEnumerable<Employee> allEmployees =
+                        await getAllEmployeesResponse.Content.ReadAsAsync<IEnumerable<Employee>>();
 
-                    if (employees != null)
+                    if (allEmployees != null)
                     {
-                        assignmentViewModel.EmployeesList = employees.ToList();
+                        assignmentViewModel.EmployeesList = allEmployees.ToList();
                     }
                 }
 
@@ -122,46 +123,85 @@ namespace ShelterHelper.Controllers
         // POST: AssignmentsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(int id,
-            [Bind(
-                "Assignment.AssignmentId, Assignment.Title, Assignment.Description, Assignment.Priority, Assignment.CreatorId, Assignment.CreationDate, Assignment.IsCompleted, Assignment.IsInProgress, SelectedEmployeesIds")]
-            AssignmentViewModel assignmentViewModel)
+        public async Task<ActionResult> Edit([FromForm] AssignmentViewModel assignmentViewModel)
         {
             var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
 
+            var originalAssignedEmployeesList = new List<Employee>();
+            var originalAssignedEmployeesResponse =
+                await httpClient.GetAsync(
+                    $"{_employeesAssignmentSearchEndpoint}{assignmentViewModel.Assignment.AssignmentId}");
+            if (originalAssignedEmployeesResponse.IsSuccessStatusCode)
+            {
+                originalAssignedEmployeesList = await originalAssignedEmployeesResponse.Content.ReadAsAsync<List<Employee>>();
+            }
+            //got old list of employees
             if (ModelState.IsValid)
             {
                 try
                 {
-                    HttpResponseMessage response =
-                        await httpClient.PostAsJsonAsync(
-                            $"{_assignmentsEndpoint}{assignmentViewModel.Assignment.AssignmentId}",
-                            assignmentViewModel);
-                    response.EnsureSuccessStatusCode();
-
-                    if (assignmentViewModel.SelectedEmployeesIds != null)
+                    var editedAssignment = new Assignment()
                     {
-                        var employeesAssignmentsList = new List<EmployeesAssignments>();
-                        foreach (var employeeId in assignmentViewModel.SelectedEmployeesIds)
+                        AssignmentId = assignmentViewModel.Assignment.AssignmentId,
+                        CreationDate = assignmentViewModel.Assignment.CreationDate,
+                        CreatorId = assignmentViewModel.Assignment.CreatorId,
+                        Description = assignmentViewModel.Assignment.Description,
+                        IsCompleted = assignmentViewModel.Assignment.IsCompleted,
+                        IsInProgress = assignmentViewModel.Assignment.IsInProgress,
+                        Priority = assignmentViewModel.Assignment.Priority,
+                        Title = assignmentViewModel.Assignment.Title
+                    };
+                    
+                    await httpClient.PutAsJsonAsync($"{_employeesAssignmentsEndpoint}{editedAssignment.AssignmentId}", editedAssignment);
+                    var originalEmployeesIds = originalAssignedEmployeesList.Select(e => e.EmployeeId);
+                    //find new people
+                    var newlyAssigned = assignmentViewModel.SelectedEmployeesIds.Except(originalEmployeesIds);
+                    if (newlyAssigned.Count() > 0)
+                    {
+                        foreach (var employeeId in newlyAssigned)
                         {
-                            new EmployeesAssignments()
+                            var newEmployeeAssignment = new EmployeeAssignment()
                             {
-                                AssignmentId = id,
-                                EmployeeId = employeeId
+                                EmployeeId = employeeId,
+                                AssignmentId = assignmentViewModel.Assignment.AssignmentId
                             };
+                            
+                            await httpClient.PostAsJsonAsync(_employeesAssignmentsEndpoint, newEmployeeAssignment);
                         }
-
-                        var employeesAssignmentsResponse =
-                            await httpClient.PostAsJsonAsync($"{_employeesAssignmentsEndpoint}",
-                                employeesAssignmentsList);
-                        employeesAssignmentsResponse.EnsureSuccessStatusCode();
                     }
 
+                    var noLongerAssigned = originalAssignedEmployeesList.Select(e => e.EmployeeId)
+                        .Except(assignmentViewModel.SelectedEmployeesIds);
+                    //find who to delete
+                    if (noLongerAssigned.Count() > 0)
+                    {
+                        //to delete I need: assignment id, employee id, record id
+                        //assignmentViewModel.Assignment.AssignmentId
+                        //foreach employeeId in noLongerAssigned
+                        var currentEmployeeAssignmentsResponse = await httpClient.GetAsync($"{_employeesAssignmentSearchEndpoint}{
+                            assignmentViewModel.Assignment.AssignmentId}");//whole employeeassignment objects of current assignment
+                        
+                        if (currentEmployeeAssignmentsResponse.IsSuccessStatusCode)
+                        {
+                            var currentEmployeeAssignmentsList = await currentEmployeeAssignmentsResponse.Content
+                                .ReadAsAsync<List<EmployeeAssignment>>();
+
+                            foreach (var employeeId in noLongerAssigned)
+                            {
+                                var match = currentEmployeeAssignmentsList.Find(a => a.EmployeeId == employeeId);
+                                if (match != null) await httpClient.DeleteAsync($"{_employeesAssignmentsEndpoint}{match.Id.ToString()}");
+                            }
+                            //which record ids match deleted employees
+                        }
+                    }
+                    
+                   
                     TempData["Success"] = "Edited successfully.";
                     return RedirectToAction("Index");
                 }
                 catch (Exception e)
                 {
+                    TempData["Error"] = "Failure, check the console for details.";
                     Console.WriteLine(e);
                 }
             }
@@ -170,7 +210,7 @@ namespace ShelterHelper.Controllers
                 TempData["Error"] = "Failed to edit.";
             }
 
-            return View(assignmentViewModel);
+            return RedirectToAction("Index");
         }
 
         // GET: AssignmentsController/Delete/5

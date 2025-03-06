@@ -8,7 +8,7 @@ namespace ShelterHelper.Models
         public DbSet<Species> SpeciesDb { get; set; }
         public DbSet<Assignment> AssignmentsDb { get; set; }
         public DbSet<Employee> EmployeesDb { get; set; }
-        public DbSet<EmployeesAssignments> EmployeesAssignmentsDb { get; set; }
+        public DbSet<EmployeeAssignment> EmployeesAssignmentsDb { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

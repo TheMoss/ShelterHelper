@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ShelterHelper.Models;
 
-public class EmployeesAssignments
+public class EmployeeAssignment
 {
     [Key]
     public int? Id { get; set; }

@@ -7,9 +7,18 @@ namespace ShelterHelper.Models
 		[Key]
 		public int EmployeeId { get; set; }
 
-		[Display(Name = "Employee's ID")]
+		[Display(Name = "Personal ID")]
 		public int? EmployeePersonalId{ get; set; }
+		
         [StringLength(50)]
+        [Display(Name = "Name")]
         public string? EmployeeName { get; set; }
+        
+
+        public Employee(string employeeName, int employeePersonalId)
+        {
+	        EmployeeName = employeeName;
+	        EmployeePersonalId = employeePersonalId;
+        }
     }
 }

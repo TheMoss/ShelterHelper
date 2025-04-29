@@ -1,9 +1,10 @@
+using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using ShelterHelper.API.Controllers;
 using ShelterHelper.Models;
 using ShelterHelper.ViewModels;
-using ShelterHelperAPI.Models;
-using System.Diagnostics;
-using X.PagedList;
 using X.PagedList.Extensions;
 
 namespace ShelterHelper.Controllers
@@ -11,37 +12,35 @@ namespace ShelterHelper.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly AnimalsController _animalsController;
+        private readonly SpeciesController _speciesController;
+        private readonly OwnersController _ownersController;
 
 
-        public HomeController(ILogger<HomeController> logger, IHttpClientFactory httpClientFactory)
+        public HomeController(ILogger<HomeController> logger, AnimalsController animalsController,
+            SpeciesController speciesController, OwnersController ownersController)
         {
             _logger = logger;
-            _httpClientFactory = httpClientFactory;
+            _animalsController = animalsController;
+            _speciesController = speciesController;
+            _ownersController = ownersController;
         }
 
         // GET: HomeController
-        public async Task<IActionResult> Index(int? page, string sortOrder, string searchString, string filterBy)
+        public async Task<IActionResult> Index(int? page, string? searchString, string filterBy, string? sortOrder)
         {
-            ViewBag.CurrentAnimalSortOrder = sortOrder;
-            IEnumerable<Models.Animal> animals = null;
-            var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
-            var response = await httpClient.GetAsync("api/animals");
-
-            if (response.IsSuccessStatusCode)
-            {
-                animals = await response.Content.ReadAsAsync<IEnumerable<Models.Animal>>();
-            }
+            var allAnimals = await _animalsController.GetAnimalsDb();
 
             if (!String.IsNullOrEmpty(searchString))
             {
                 switch (filterBy)
                 {
                     case "name":
-                        animals = animals.Where(name => name.Name.ToString().Contains(searchString));
+                        allAnimals = allAnimals.Where(name => name.Name.ToString().Contains(searchString));
                         break;
                     case "chipNumber":
-                        animals = animals.Where(chipNumber => chipNumber.ChipNumber.ToString().Contains(searchString));
+                        allAnimals = allAnimals.Where(chipNumber =>
+                            chipNumber.ChipNumber.ToString().Contains(searchString));
                         break;
                 }
             }
@@ -55,52 +54,51 @@ namespace ShelterHelper.Controllers
             switch (sortOrder)
             {
                 case "ChipNumber":
-                    animals = animals.OrderBy(a => a.ChipNumber);
+                    allAnimals = allAnimals.OrderBy(a => a.ChipNumber);
                     break;
                 case "chip_number_desc":
-                    animals = animals.OrderByDescending(a => a.ChipNumber);
+                    allAnimals = allAnimals.OrderByDescending(a => a.ChipNumber);
                     break;
                 case "Species":
-                    animals = animals.OrderBy(a => a.Species.SpeciesName);
+                    allAnimals = allAnimals.OrderBy(a => a.Species.SpeciesName);
                     break;
                 case "species_desc":
-                    animals = animals.OrderByDescending(a => a.Species.SpeciesName);
+                    allAnimals = allAnimals.OrderByDescending(a => a.Species.SpeciesName);
                     break;
                 case "Sex":
-                    animals = animals.OrderBy(a => a.Sex);
+                    allAnimals = allAnimals.OrderBy(a => a.Sex);
                     break;
                 case "sex_desc":
-                    animals = animals.OrderByDescending(a => a.Sex);
+                    allAnimals = allAnimals.OrderByDescending(a => a.Sex);
                     break;
                 case "AdmissionDate":
-                    animals = animals.OrderBy(a => a.AdmissionDay);
+                    allAnimals = allAnimals.OrderBy(a => a.AdmissionDay);
                     break;
                 case "admission_date_desc":
-                    animals = animals.OrderByDescending(a => a.AdmissionDay);
+                    allAnimals = allAnimals.OrderByDescending(a => a.AdmissionDay);
                     break;
                 case "AdoptionDate":
-                    animals = animals.OrderBy(a => a.AdoptionDay);
+                    allAnimals = allAnimals.OrderBy(a => a.AdoptionDay);
                     break;
                 case "adoption_date_desc":
-                    animals = animals.OrderByDescending(a => a.AdoptionDay);
+                    allAnimals = allAnimals.OrderByDescending(a => a.AdoptionDay);
                     break;
                 case "Employee":
-                    animals = animals.OrderBy(a => a.Employee.EmployeePersonalId);
+                    allAnimals = allAnimals.OrderBy(a => a.Employee.EmployeePersonalId);
                     break;
                 case "employee_desc":
-                    animals = animals.OrderByDescending(a => a.Employee.EmployeePersonalId);
+                    allAnimals = allAnimals.OrderByDescending(a => a.Employee.EmployeePersonalId);
                     break;
                 default:
-                    animals = animals.OrderBy(a => a.Name);
+                    allAnimals = allAnimals.OrderBy(a => a.Name);
                     break;
             }
 
             var pageNumber = page ?? 1;
-            var pagedList = animals.ToPagedList(pageNumber, 10);
+            var pagedList = allAnimals.ToPagedList(pageNumber, 10);
             ViewBag.AnimalsPagedList = pagedList;
 
-
-            return View(animals);
+            return View(allAnimals);
         }
 
 
@@ -113,16 +111,9 @@ namespace ShelterHelper.Controllers
         // GET: HomeController/Create
         public async Task<IActionResult> Create()
         {
-            var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
-            var response = await httpClient.GetAsync("api/species");
-            IEnumerable<Models.Species> species = null;
+            var species = await _speciesController.GetSpeciesDb();
             var viewModel = new AnimalViewModel();
-            if (response.IsSuccessStatusCode)
-            {
-                species = await response.Content.ReadAsAsync<IEnumerable<Models.Species>>();
-
-                viewModel.SpeciesList = species.ToList();
-            }
+            viewModel.SpeciesList = species.ToList();
 
             return View(viewModel);
         }
@@ -132,8 +123,6 @@ namespace ShelterHelper.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateConfirmed(AnimalViewModel animalViewModel)
         {
-            var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
-
             var animal = new Models.Animal()
             {
                 SpeciesId = animalViewModel.Animal.SpeciesId,
@@ -149,8 +138,7 @@ namespace ShelterHelper.Controllers
             animal.AdoptionDay = new DateOnly(1900, 1, 1);
             if (ModelState.IsValid)
             {
-                HttpResponseMessage response = await httpClient.PostAsJsonAsync("api/animals", animal);
-                response.EnsureSuccessStatusCode();
+                _animalsController.PostAnimal(animal);
                 TempData["Success"] = "New animal added to the database.";
                 return RedirectToAction("Index");
             }
@@ -165,124 +153,89 @@ namespace ShelterHelper.Controllers
         //GET: HomeController/Edit/1
         public async Task<IActionResult> Edit(int? id)
         {
-            var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
-            var animal = new Models.Animal();
             if (id == null)
+            {
+                return BadRequest();
+            }
+
+            var animal = await _animalsController.GetAnimal(id);
+            if (animal.Value == null)
             {
                 return NotFound();
             }
 
-            HttpResponseMessage response = await httpClient.GetAsync($"api/animals/{id}");
-            if (response.IsSuccessStatusCode)
-            {
-                animal = await response.Content.ReadAsAsync<Models.Animal>();
-            }
-
-            return View(animal);
+            return View(animal.Value);
         }
 
         //POST: HomeController/Edit/1
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int? id,
+        public async Task<IActionResult> Edit(int id,
             [Bind("Id, SpeciesId, Name, ChipNumber, Sex, Weight, AdmissionDay, AdoptionDay, Health, EmployeeId")]
             Models.Animal animal)
         {
-            var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
-                HttpResponseMessage response = await httpClient.PostAsJsonAsync($"api/animals/{animal.Id}", animal);
-                response.EnsureSuccessStatusCode();
+                await _animalsController.PostAnimal(animal);
                 TempData["Success"] = "Edited successfully.";
                 return RedirectToAction("Index");
             }
-            else
-            {
-                TempData["Error"] = "Failed to edit.";
-            }
+
+            TempData["Error"] = "Failed to edit.";
 
             return View(animal);
         }
 
         //GET : HomeController/Delete/1 
+        [Authorize(Roles = "Manager")]
         public async Task<IActionResult> Delete(int? id)
         {
-            var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
-            var animal = new Models.Animal();
             if (id == null)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            var response = await httpClient.GetAsync($"api/animals/{id}");
-            if (response.IsSuccessStatusCode)
-            {
-                animal = await response.Content.ReadAsAsync<Models.Animal>();
-            }
-
-            if (animal == null)
+            var animal = await _animalsController.GetAnimal(id);
+            if (animal.Value == null)
             {
                 return NotFound();
             }
 
-            return View(animal);
+            return View(animal.Value);
         }
 
         //POST : HomeController/Delete/1 
+        [Authorize(Roles = "Manager")]
         [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int? id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
-            var response = await httpClient.GetAsync($"api/animals/{id}");
-
-            if (response.IsSuccessStatusCode)
-            {
-                await httpClient.DeleteAsync($"api/animals/{id}");
-                TempData["Success"] = "Deleted successfully.";
-            }
-
+            await _animalsController.DeleteAnimal(id);
             return RedirectToAction("Index");
         }
 
         //GET : HomeController/Adopt/1
         public async Task<IActionResult> Adopt(int? id)
         {
-            var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
-            var animalViewModel = new AdoptionViewModel();
             if (id == null)
+            {
+                return BadRequest();
+            }
+
+            var adoptionViewModel = new AdoptionViewModel();
+            var animal = await _animalsController.GetAnimal(id);
+            if (animal.Value == null)
             {
                 return NotFound();
             }
 
-            var response = await httpClient.GetAsync($"api/animals/{id}");
-            if (response.IsSuccessStatusCode)
-            {
-                Models.Animal animal = await response.Content.ReadAsAsync<Models.Animal>();
-                animalViewModel.Animal = animal;
-            }
+            adoptionViewModel.Animal = animal.Value;
 
-            return View(animalViewModel);
+            return View(adoptionViewModel);
         }
 
         //PATCH : HomeController/Adopt/1
-        [HttpPatch, ActionName("Adopt")]
-        public async Task<ActionResult> AdoptConfirmed(int animalId, AdoptionViewModel adoption)
+        [HttpPost, ActionName("Adopt")]
+        public async Task<ActionResult> AdoptConfirmed(int id, [FromForm] AdoptionViewModel adoption)
         {
-            var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
-            if (adoption.Animal.Id == null)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
                 var owner = new Models.Owner
@@ -291,25 +244,30 @@ namespace ShelterHelper.Controllers
                     Address = adoption.Owner.Address,
                     Email = adoption.Owner.Email
                 };
-                HttpResponseMessage response = await httpClient.PostAsJsonAsync("api/owners", owner);
-                response.EnsureSuccessStatusCode();
 
+                await _ownersController.Post(owner);
                 var adoptionDate = adoption.Animal.AdoptionDay;
 
-                var allOwners = await httpClient.GetAsync($"https://localhost:7147/api/owners");
-                var ownersList = await allOwners.Content.ReadAsAsync<IEnumerable<Models.Owner>>();
+                var allOwners = await _ownersController.GetAllOwners();
+                int? newOwnerId = allOwners.Value.First(owner => owner.OwnerName == adoption.Owner.OwnerName).OwnerId;
+                if (newOwnerId == null)
+                {
+                    return NotFound();
+                }
 
-                int? newOwnerId = ownersList.FirstOrDefault(owner =>
-                    owner.OwnerName == adoption.Owner.OwnerName && owner.Address == adoption.Owner.Address).OwnerId;
-
-                string patchDocument = "patch";
-                HttpResponseMessage patchAdoptionDateAndOwner =
-                    await httpClient.PatchAsJsonAsync($"api/animal/{animalId}", patchDocument);
-
+                var jsonPatch = new JsonPatchDocument<Animal>().Replace(a => a.AdoptionDay, adoptionDate)
+                    .Replace(o => o.OwnerId, newOwnerId);
+                await _animalsController.Patch(id, jsonPatch);
+                TempData["Success"] = "Adoption recorded successfully.";
                 return RedirectToAction("Index");
             }
 
             return View(adoption);
+        }
+
+        public IActionResult Welcome()
+        {
+            return View();
         }
     }
 }

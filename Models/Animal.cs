@@ -6,12 +6,11 @@ namespace ShelterHelper.Models
     {
         [Key]
         public int? Id { get; set; }
-
+        
         [Display(Name = "Species")]
-        public int? SpeciesId { get; set; }
-
         public virtual Species? Species { get; set; }
-
+        public int? SpeciesId { get; set; }
+        
         [Display(Name = "Chip number"), Range(10000000, 99999999), Required]
         public int ChipNumber { get; set; }
 
@@ -19,10 +18,9 @@ namespace ShelterHelper.Models
         public string Name { get; set; }
 
         public string? Sex { get; set; }
-
-        [Required]
+        
         [Range(1, 5000, ErrorMessage = "Only positive number allowed")]
-        public int Weight { get; set; }
+        public int? Weight { get; set; }
 
         [DataType(DataType.Date), Display(Name = "Admission day"), Required]
         public DateOnly AdmissionDay { get; set; }

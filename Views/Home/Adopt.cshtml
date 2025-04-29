@@ -7,9 +7,9 @@
 <div class="row">
 	<div class="col-md-4">
 
-		<form asp-action="Adopt" method="post">
-			<div asp-validation-summary="ModelOnly"></div>
-			<input type="hidden" asp-for="Animal.Id"/>
+		<form asp-action="Adopt" method="post" asp-route-id="@Model.Animal.Id">
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+			<input type="hidden" asp-for="Animal.Id" />
 			<input type="hidden" asp-for="Animal.Species.Toy.ToyName"/>
 			<input type="hidden" asp-for="Animal.Species.Accessory.AccessoryName"/>
 
@@ -51,14 +51,14 @@
 
 			<div class="form-group">
 				<label for="admission-day-input" asp-for="Animal.AdmissionDay" class="control-label"></label>
-				<input id="admission-day-input" asp-for="Animal.AdmissionDay" class="form-control" value=""
+				<input id="admission-day-input" asp-for="Animal.AdmissionDay" class="form-control" 
 				       style="color:black" readonly/>
 				<span asp-validation-for="Animal.AdmissionDay" class="text-danger"></span>
 			</div>
 
 			<div class="form-group">
 				<label for="adoption-day-input" asp-for="Animal.AdoptionDay" class="control-label"></label>
-				<input id="adoption-day-input" asp-for="Animal.AdoptionDay" class="form-control" value=""/>
+				<input id="adoption-day-input" asp-for="Animal.AdoptionDay" class="form-control" />
 				<span asp-validation-for="Animal.AdoptionDay" class="text-danger"></span>
 			</div>
 			
@@ -72,3 +72,9 @@
 <div>
 	<a asp-action="Index">Back to List</a>
 </div>
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}

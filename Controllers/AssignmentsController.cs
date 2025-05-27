@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ShelterHelper.API.Controllers;
 using ShelterHelper.Models;
 using ShelterHelper.ViewModels;
 
@@ -8,30 +9,23 @@ namespace ShelterHelper.Controllers
     public class AssignmentsController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly IHttpClientFactory _httpClientFactory;
-        private const string _assignmentsEndpoint = "api/assignments/";
-        private const string _employeesEndpoint = "api/employee/";
-        private const string _employeesAssignmentsEndpoint = "api/EmployeesAssignments/";
-        private const string _employeesAssignmentSearchEndpoint = "api/EmployeesAssignments/search?assignmentId=";
+        private readonly API.Controllers.AssignmentsController _assignmentsController;
+        private readonly EmployeeController _employeesController;
+        private readonly EmployeesAssignmentsController _employeesAssignmentsController;
 
-        public AssignmentsController(ILogger<HomeController> logger, IHttpClientFactory httpClientFactory)
+        public AssignmentsController(ILogger<HomeController> logger, API.Controllers.AssignmentsController assignmentsController, EmployeeController employeesController, EmployeesAssignmentsController employeesAssignmentsController)
         {
             _logger = logger;
-            _httpClientFactory = httpClientFactory;
+            _assignmentsController = assignmentsController;
+            _employeesController = employeesController;
+            _employeesAssignmentsController = employeesAssignmentsController;
         }
 
         // GET: AssignmentsController
         public async Task<IActionResult> Index()
         {
-            IEnumerable<Assignment> assignments = null;
-            var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
-            var response = await httpClient.GetAsync(_assignmentsEndpoint);
-
-            if (response.IsSuccessStatusCode)
-            {
-                assignments = await response.Content.ReadAsAsync<IEnumerable<Assignment>>();
-                assignments = assignments.OrderByDescending(a => a.Priority);
-            }
+            var assignments = await _assignmentsController.GetAssignments();
+            assignments = assignments.OrderByDescending(a => a.Priority);
 
             return View(assignments);
         }
@@ -52,23 +46,8 @@ namespace ShelterHelper.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _logger.LogDebug(
-                        $"Posting new assignment: {assignmentViewModel.Assignment.Title} data to {_assignmentsEndpoint}.");
-                    var assignmentResponse =
-                        await httpClient.PostAsJsonAsync(_assignmentsEndpoint, assignmentViewModel.Assignment);
-                    assignmentResponse.EnsureSuccessStatusCode();
-                    _logger.LogDebug(
-                        $"Posted new assignment: {assignmentViewModel.Assignment.Title} data to {_assignmentsEndpoint} successfully");
-                    TempData["Success"] = "Success, database updated.";
-                }
-                catch (Exception e)
-                {
-                    TempData["Error"] = "Error, something went wrong. Check the console for more details";
-                    Console.WriteLine(e);
-                }
-
+                _assignmentsController.PostAssignment(assignmentViewModel.Assignment);
+                TempData["Success"] = "New assignment added to the database.";
                 return RedirectToAction("Index");
             }
 
@@ -80,43 +59,26 @@ namespace ShelterHelper.Controllers
         // GET: AssignmentsController/Edit/5
         public async Task<ActionResult> Edit(int? id)
         {
-            var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
-            var assignment = new Assignment();
             var assignmentViewModel = new AssignmentViewModel();
             if (id == null)
+            {
+                return BadRequest();
+            }
+
+            var assignment = await _assignmentsController.GetAssignment(id);
+            if (assignment.Value == null)
             {
                 return NotFound();
             }
 
-            try
+            var allEmployees = await _employeesController.GetEmployees();
+            if (allEmployees.Value == null)
             {
-                var response = await httpClient.GetAsync($"{_assignmentsEndpoint}{id}");
-                if (response.IsSuccessStatusCode)
-                {
-                    assignment = await response.Content.ReadAsAsync<Assignment>();
-                }
-
-                
-                var getAllEmployeesResponse = await httpClient.GetAsync(_employeesEndpoint);
-
-                if (getAllEmployeesResponse.IsSuccessStatusCode)
-                {
-                    IEnumerable<Employee> allEmployees =
-                        await getAllEmployeesResponse.Content.ReadAsAsync<IEnumerable<Employee>>();
-
-                    if (allEmployees != null)
-                    {
-                        assignmentViewModel.EmployeesList = allEmployees.ToList();
-                    }
-                }
-
-                assignmentViewModel.Assignment = assignment;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
+                return NotFound();
             }
 
+            assignmentViewModel.EmployeesList = allEmployees.Value.ToList();
+            assignmentViewModel.Assignment = assignment.Value;
             return View(assignmentViewModel);
         }
 
@@ -214,49 +176,34 @@ namespace ShelterHelper.Controllers
         }
 
         // GET: AssignmentsController/Delete/5
+        [Authorize(Roles = "Manager")]
         public async Task<ActionResult> Delete(int? id)
         {
-            var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
-            var assignment = new Assignment();
             if (id == null)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            var response = await httpClient.GetAsync($"{_assignmentsEndpoint}{id}");
-            if (response.IsSuccessStatusCode)
-            {
-                assignment = await response.Content.ReadAsAsync<Assignment>();
-            }
+            var assignment = await _assignmentsController.GetAssignment(id);
 
-            if (assignment == null)
+            if (assignment.Value == null)
             {
                 return NotFound();
             }
 
-            return View(assignment);
+            return View(assignment.Value);
         }
 
         // POST: AssignmentsController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ActionName("Delete")]
-        public async Task<ActionResult> DeleteConfirmed(int? id)
+        [Authorize(Roles = "Manager")]
+        public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
-            var response = await httpClient.GetAsync($"{_assignmentsEndpoint}{id}");
-
-            if (response.IsSuccessStatusCode)
-            {
-                await httpClient.DeleteAsync($"{_assignmentsEndpoint}{id}");
-                TempData["Success"] = "Deleted successfully.";
-            }
-
+            await _assignmentsController.DeleteAssignment(id);
+            TempData["Success"] = "Deleted successfully.";
+            
             return RedirectToAction("Index");
         }
     }

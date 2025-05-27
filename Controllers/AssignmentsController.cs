@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShelterHelper.API.Controllers;
 using ShelterHelper.Models;
@@ -42,7 +42,6 @@ namespace ShelterHelper.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> CreateConfirmed(AssignmentViewModel assignmentViewModel)
         {
-            var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
 
             if (ModelState.IsValid)
             {
@@ -87,17 +86,6 @@ namespace ShelterHelper.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit([FromForm] AssignmentViewModel assignmentViewModel)
         {
-            var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
-
-            var originalAssignedEmployeesList = new List<Employee>();
-            var originalAssignedEmployeesResponse =
-                await httpClient.GetAsync(
-                    $"{_employeesAssignmentSearchEndpoint}{assignmentViewModel.Assignment.AssignmentId}");
-            if (originalAssignedEmployeesResponse.IsSuccessStatusCode)
-            {
-                originalAssignedEmployeesList = await originalAssignedEmployeesResponse.Content.ReadAsAsync<List<Employee>>();
-            }
-            //got old list of employees
             if (ModelState.IsValid)
             {
                 try
@@ -113,51 +101,56 @@ namespace ShelterHelper.Controllers
                         Priority = assignmentViewModel.Assignment.Priority,
                         Title = assignmentViewModel.Assignment.Title
                     };
+                    await _assignmentsController.PostSelectedAssignment(editedAssignment.AssignmentId,
+                        editedAssignment);
                     
-                    await httpClient.PutAsJsonAsync($"{_employeesAssignmentsEndpoint}{editedAssignment.AssignmentId}", editedAssignment);
-                    var originalEmployeesIds = originalAssignedEmployeesList.Select(e => e.EmployeeId);
-                    //find new people
-                    var newlyAssigned = assignmentViewModel.SelectedEmployeesIds.Except(originalEmployeesIds);
-                    if (newlyAssigned.Count() > 0)
+                    //find original members
+                    var originalAssignedEmployees =
+                        await _employeesAssignmentsController.GetEmployeesFilteredByAssignment(assignmentViewModel
+                            .Assignment.AssignmentId.ToString());
+                    
+                    var idsOriginal = originalAssignedEmployees?.Select(e => e.EmployeeId).ToList();
+                    var idsNew = assignmentViewModel.SelectedEmployeesIds?.ExceptBy(idsOriginal,id => id ).ToList();
+                    
+                    //any new? (new - old)
+                    if (idsNew is not null)
                     {
-                        foreach (var employeeId in newlyAssigned)
+                        foreach (int id in idsNew)
                         {
-                            var newEmployeeAssignment = new EmployeeAssignment()
+                            var employeeAssignment = new EmployeeAssignment
                             {
-                                EmployeeId = employeeId,
-                                AssignmentId = assignmentViewModel.Assignment.AssignmentId
+                                AssignmentId = assignmentViewModel.Assignment.AssignmentId,
+                                EmployeeId = id
                             };
-                            
-                            await httpClient.PostAsJsonAsync(_employeesAssignmentsEndpoint, newEmployeeAssignment);
+                            _employeesAssignmentsController.PostEmployeesAssignments(employeeAssignment);
+                        }
+                    }       
+                    
+                    // any to remove? (old - new)
+                    if (assignmentViewModel.SelectedEmployeesIds is not null) //form list has ids
+                    {
+                        var idsToRemove = idsOriginal.ExceptBy(assignmentViewModel.SelectedEmployeesIds, id => id);
+                        foreach (int id in idsToRemove) //use id to find EmployeeAssignment pair to be removed
+                        {
+                            //use Find()? or create a query
+                           var queryResults = await _employeesAssignmentsController.GetEmployeeAssignmentByAssignmentAndEmployeeIds(assignmentViewModel.Assignment.AssignmentId.ToString(), id.ToString());
+                           await _employeesAssignmentsController.DeleteEmployeeAssignment(queryResults[0].Id);
                         }
                     }
-
-                    var noLongerAssigned = originalAssignedEmployeesList.Select(e => e.EmployeeId)
-                        .Except(assignmentViewModel.SelectedEmployeesIds);
-                    //find who to delete
-                    if (noLongerAssigned.Count() > 0)
+                    else //form list has no ids, meaning everyone got deleted
                     {
-                        //to delete I need: assignment id, employee id, record id
-                        //assignmentViewModel.Assignment.AssignmentId
-                        //foreach employeeId in noLongerAssigned
-                        var currentEmployeeAssignmentsResponse = await httpClient.GetAsync($"{_employeesAssignmentSearchEndpoint}{
-                            assignmentViewModel.Assignment.AssignmentId}");//whole employeeassignment objects of current assignment
-                        
-                        if (currentEmployeeAssignmentsResponse.IsSuccessStatusCode)
+                        if (idsOriginal is not null) //compare with origin to check if the task wasn't initally empty
                         {
-                            var currentEmployeeAssignmentsList = await currentEmployeeAssignmentsResponse.Content
-                                .ReadAsAsync<List<EmployeeAssignment>>();
-
-                            foreach (var employeeId in noLongerAssigned)
+                            //remove all original ids
+                            foreach (int id in idsOriginal)
                             {
-                                var match = currentEmployeeAssignmentsList.Find(a => a.EmployeeId == employeeId);
-                                if (match != null) await httpClient.DeleteAsync($"{_employeesAssignmentsEndpoint}{match.Id.ToString()}");
+                                //remove
+                                var queryResults = await _employeesAssignmentsController.GetEmployeeAssignmentByAssignmentAndEmployeeIds(assignmentViewModel.Assignment.AssignmentId.ToString(), id.ToString());
+                                await _employeesAssignmentsController.DeleteEmployeeAssignment(queryResults[0].Id);
                             }
-                            //which record ids match deleted employees
                         }
                     }
                     
-                   
                     TempData["Success"] = "Edited successfully.";
                     return RedirectToAction("Index");
                 }
@@ -173,6 +166,16 @@ namespace ShelterHelper.Controllers
             }
 
             return RedirectToAction("Index");
+        }
+
+        private List<int>? EmployeesAddedToAssignment(List<int>? initialIds, List<int> currentIds)
+        {
+            return currentIds.Except(initialIds).ToList();
+        }
+
+        private List<int>? EmployeesRemovedFromAssignment(List<int> initialIds, List<int>? currentIds)
+        {
+            return initialIds.Except(currentIds).ToList();
         }
 
         // GET: AssignmentsController/Delete/5

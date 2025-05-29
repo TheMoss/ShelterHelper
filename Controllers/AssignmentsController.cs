@@ -13,7 +13,9 @@ namespace ShelterHelper.Controllers
         private readonly EmployeeController _employeesController;
         private readonly EmployeesAssignmentsController _employeesAssignmentsController;
 
-        public AssignmentsController(ILogger<HomeController> logger, API.Controllers.AssignmentsController assignmentsController, EmployeeController employeesController, EmployeesAssignmentsController employeesAssignmentsController)
+        public AssignmentsController(ILogger<HomeController> logger,
+            API.Controllers.AssignmentsController assignmentsController, EmployeeController employeesController,
+            EmployeesAssignmentsController employeesAssignmentsController)
         {
             _logger = logger;
             _assignmentsController = assignmentsController;
@@ -42,7 +44,6 @@ namespace ShelterHelper.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> CreateConfirmed(AssignmentViewModel assignmentViewModel)
         {
-
             if (ModelState.IsValid)
             {
                 _assignmentsController.PostAssignment(assignmentViewModel.Assignment);
@@ -103,19 +104,17 @@ namespace ShelterHelper.Controllers
                     };
                     await _assignmentsController.PostSelectedAssignment(editedAssignment.AssignmentId,
                         editedAssignment);
-                    
-                    //find original members
+
                     var originalAssignedEmployees =
                         await _employeesAssignmentsController.GetEmployeesFilteredByAssignment(assignmentViewModel
                             .Assignment.AssignmentId.ToString());
-                    
+
                     var idsOriginal = originalAssignedEmployees?.Select(e => e.EmployeeId).ToList();
-                    var idsNew = assignmentViewModel.SelectedEmployeesIds?.ExceptBy(idsOriginal,id => id ).ToList();
+                    var idsNew = assignmentViewModel.SelectedEmployeesIds?.ExceptBy(idsOriginal, id => id).ToList();
                     
-                    //any new? (new - old)
                     if (idsNew is not null)
                     {
-                        foreach (int id in idsNew)
+                        foreach (var id in idsNew)
                         {
                             var employeeAssignment = new EmployeeAssignment
                             {
@@ -124,33 +123,12 @@ namespace ShelterHelper.Controllers
                             };
                             _employeesAssignmentsController.PostEmployeesAssignments(employeeAssignment);
                         }
-                    }       
-                    
-                    // any to remove? (old - new)
-                    if (assignmentViewModel.SelectedEmployeesIds is not null) //form list has ids
-                    {
-                        var idsToRemove = idsOriginal.ExceptBy(assignmentViewModel.SelectedEmployeesIds, id => id);
-                        foreach (int id in idsToRemove) //use id to find EmployeeAssignment pair to be removed
-                        {
-                            //use Find()? or create a query
-                           var queryResults = await _employeesAssignmentsController.GetEmployeeAssignmentByAssignmentAndEmployeeIds(assignmentViewModel.Assignment.AssignmentId.ToString(), id.ToString());
-                           await _employeesAssignmentsController.DeleteEmployeeAssignment(queryResults[0].Id);
-                        }
                     }
-                    else //form list has no ids, meaning everyone got deleted
-                    {
-                        if (idsOriginal is not null) //compare with origin to check if the task wasn't initally empty
-                        {
-                            //remove all original ids
-                            foreach (int id in idsOriginal)
-                            {
-                                //remove
-                                var queryResults = await _employeesAssignmentsController.GetEmployeeAssignmentByAssignmentAndEmployeeIds(assignmentViewModel.Assignment.AssignmentId.ToString(), id.ToString());
-                                await _employeesAssignmentsController.DeleteEmployeeAssignment(queryResults[0].Id);
-                            }
-                        }
-                    }
-                    
+
+                    await EmployeesRemovedFromAssignment(assignmentViewModel.Assignment.AssignmentId, idsOriginal,
+                        assignmentViewModel.SelectedEmployeesIds);
+
+
                     TempData["Success"] = "Edited successfully.";
                     return RedirectToAction("Index");
                 }
@@ -168,14 +146,41 @@ namespace ShelterHelper.Controllers
             return RedirectToAction("Index");
         }
 
-        private List<int>? EmployeesAddedToAssignment(List<int>? initialIds, List<int> currentIds)
+        private async Task EmployeesRemovedFromAssignment(int? assignmentId, List<int>? idsOriginal,
+            List<int>? currentIds)
         {
-            return currentIds.Except(initialIds).ToList();
-        }
-
-        private List<int>? EmployeesRemovedFromAssignment(List<int> initialIds, List<int>? currentIds)
-        {
-            return initialIds.Except(currentIds).ToList();
+            try
+            {
+                if (currentIds is not null)
+                {
+                    var idsToRemove = idsOriginal.ExceptBy(currentIds, id => id);
+                    foreach (var id in idsToRemove)
+                    {
+                        var queryResults =
+                            await _employeesAssignmentsController.GetEmployeeAssignmentByAssignmentAndEmployeeIds(
+                                currentIds.ToString(), id.ToString());
+                        await _employeesAssignmentsController.DeleteEmployeeAssignment(queryResults[0].Id);
+                    }
+                }
+                else
+                {
+                    if (idsOriginal is not null)
+                    {
+                        foreach (var id in idsOriginal)
+                        {
+                            var queryResults =
+                                await _employeesAssignmentsController.GetEmployeeAssignmentByAssignmentAndEmployeeIds(
+                                    assignmentId.ToString(), id.ToString());
+                            Console.WriteLine(queryResults.First().Id);
+                            await _employeesAssignmentsController.DeleteEmployeeAssignment(queryResults.First().Id);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
 
         // GET: AssignmentsController/Delete/5
@@ -206,7 +211,7 @@ namespace ShelterHelper.Controllers
         {
             await _assignmentsController.DeleteAssignment(id);
             TempData["Success"] = "Deleted successfully.";
-            
+
             return RedirectToAction("Index");
         }
     }

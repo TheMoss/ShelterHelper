@@ -105,19 +105,15 @@ namespace ShelterHelper.API.Controllers
         [HttpPatch("{id}")]
         public async Task<IActionResult> Patch(int id, [FromBody] JsonPatchDocument<Animal> patchAnimal)
         {
-            if (patchAnimal != null)
+            var animal = await _context.AnimalsDb.FindAsync(id);
+            if (animal is not null)
             {
-                var animal = await _context.AnimalsDb.FindAsync(id);
                 patchAnimal.ApplyTo(animal);
                 _context.Update(animal);
                 await _context.SaveChangesAsync();
                 return Ok();
             }
-
-            else
-            {
-                return BadRequest();
-            }
+            return BadRequest();
         }
 
         // DELETE: api/animals/5

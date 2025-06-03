@@ -58,16 +58,14 @@ namespace ShelterHelper.API.Controllers
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
                 if (!EmployeeExists(id))
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+
+                Console.WriteLine(ex);
             }
 
             return NoContent();

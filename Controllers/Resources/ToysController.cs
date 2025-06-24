@@ -7,9 +7,9 @@ namespace ShelterHelper.Controllers.Resources;
 
 public class ToysController : Controller
 {
-    private readonly ResourcesController _resourcesController;
+    private readonly API.Controllers.ResourcesController _resourcesController;
 
-    public ToysController(ResourcesController resourcesController)
+    public ToysController(API.Controllers.ResourcesController resourcesController)
     {
         _resourcesController = resourcesController;
     }
@@ -41,7 +41,7 @@ public class ToysController : Controller
             TempData["Error"] = "Error, ModelState invalid.";
         }
 
-        return View("Views/Storage/Index.cshtml");
+        return View("Views/Resources/Index.cshtml");
     }
 
     public async Task<IActionResult> EditToy(int? id)
@@ -60,7 +60,7 @@ public class ToysController : Controller
             Console.WriteLine(e);
         }
 
-        return View("Views/Storage/EditResource/EditToy.cshtml", toy);
+        return View("Views/Resources/EditResource/EditToy.cshtml", toy);
     }
 
     // POST: StorageController/Resources/Toys/5
@@ -81,10 +81,10 @@ public class ToysController : Controller
                 Console.WriteLine(e);
             }
 
-            return RedirectToAction("Index", "Storage");
+            return RedirectToAction("Index", "Resources");
         }
 
-        return View("Views/Storage/EditResource/EditToy.cshtml", toy);
+        return View("Views/Resources/EditResource/EditToy.cshtml", toy);
     }
 
 
@@ -104,7 +104,7 @@ public class ToysController : Controller
             Console.WriteLine(e);
         }
 
-        return View("Views/Storage/DeleteResource/DeleteToy.cshtml", toy);
+        return View("Views/Resources/DeleteResource/DeleteToy.cshtml", toy);
     }
 
     // POST: StorageController/Resources/Toys/5
@@ -121,7 +121,7 @@ public class ToysController : Controller
             Console.WriteLine(e);
         }
 
-        return RedirectToAction("Index", "Storage");
+        return RedirectToAction("Index", "Resources");
     }
 
 }

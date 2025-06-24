@@ -7,9 +7,9 @@ namespace ShelterHelper.Controllers.Resources;
 
 public class DietsController : Controller
 {
-    private readonly ResourcesController _resourcesController;
+    private readonly API.Controllers.ResourcesController _resourcesController;
 
-    public DietsController(ResourcesController resourcesController)
+    public DietsController(API.Controllers.ResourcesController resourcesController)
     {
         _resourcesController = resourcesController;
     }
@@ -41,7 +41,7 @@ public class DietsController : Controller
             Console.WriteLine(e);
         }
 
-        return View("Views/Storage/Index.cshtml");
+        return View("Views/Resources/Index.cshtml");
     }
 
     public async Task<IActionResult> EditDiet(int? id)
@@ -59,7 +59,7 @@ public class DietsController : Controller
             Console.WriteLine(e);
         }
 
-        return View("Views/Storage/EditResource/EditDiet.cshtml", diet);
+        return View("Views/Resources/EditResource/EditDiet.cshtml", diet);
     }
 
     // POST: StorageController/Resources/Diets/5
@@ -80,10 +80,10 @@ public class DietsController : Controller
                 Console.WriteLine(e);
             }
 
-            return RedirectToAction("Index", "Storage");
+            return RedirectToAction("Index", "Resources");
         }
 
-        return View("Views/Storage/EditResource/EditDiet.cshtml", diet);
+        return View("Views/Resources/EditResource/EditDiet.cshtml", diet);
     }
 
 
@@ -103,7 +103,7 @@ public class DietsController : Controller
             Console.WriteLine(e);
         }
         if (diet == null) return NotFound();
-        return View("Views/Storage/DeleteResource/DeleteDiet.cshtml", diet);
+        return View("Views/Resources/DeleteResource/DeleteDiet.cshtml", diet);
     }
 
     // POST: StorageController/Resources/Diets/5
@@ -120,7 +120,7 @@ public class DietsController : Controller
             Console.WriteLine(e);
         }
 
-        return RedirectToAction("Index", "Storage");
+        return RedirectToAction("Index", "Resources");
     }
 
 }

@@ -7,9 +7,9 @@ namespace ShelterHelper.Controllers.Resources;
 
 public class BeddingsController : Controller
 {
-    private readonly ResourcesController _resourcesController;
+    private readonly API.Controllers.ResourcesController _resourcesController;
 
-    public BeddingsController(ResourcesController resourcesController)
+    public BeddingsController(API.Controllers.ResourcesController resourcesController)
     {
         _resourcesController = resourcesController;
     }
@@ -63,7 +63,7 @@ public class BeddingsController : Controller
             Console.WriteLine(e);
         }
 
-        return View("Views/Storage/EditResource/EditBedding.cshtml", bedding);
+        return View("Views/Resources/EditResource/EditBedding.cshtml", bedding);
     }
 
     // POST: StorageController/Resources/Bedding/5
@@ -88,7 +88,7 @@ public class BeddingsController : Controller
                 Console.WriteLine(e);
             }
 
-            return RedirectToAction("Index", "Storage");
+            return RedirectToAction("Index", "Resources");
         }
 
         return View(bedding);
@@ -113,7 +113,7 @@ public class BeddingsController : Controller
         }
 
         if (bedding == null) return NotFound();
-        return View("Views/Storage/DeleteResource/DeleteBedding.cshtml", bedding);
+        return View("Views/Resources/DeleteResource/DeleteBedding.cshtml", bedding);
     }
 
     // POST: StorageController/Resources/Bedding/5
@@ -130,7 +130,7 @@ public class BeddingsController : Controller
             Console.WriteLine(e);
         }
 
-        return RedirectToAction("Index", "Storage");
+        return RedirectToAction("Index", "Resources");
     }
 
 }

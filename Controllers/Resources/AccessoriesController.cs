@@ -7,9 +7,9 @@ namespace ShelterHelper.Controllers.Resources;
 
 public class AccessoriesController : Controller
 {
-    private readonly ResourcesController _resourcesController;
+    private readonly API.Controllers.ResourcesController _resourcesController;
 
-    public AccessoriesController(ResourcesController resourcesController)
+    public AccessoriesController(API.Controllers.ResourcesController resourcesController)
     {
         _resourcesController = resourcesController;
     }
@@ -42,7 +42,7 @@ public class AccessoriesController : Controller
             TempData["Error"] = "Error, ModelState invalid.";
         }
 
-        return RedirectToAction("Index", "Storage");
+        return RedirectToAction("Index", "Resources");
     }
 
     public async Task<IActionResult> EditAccessory(int? id)
@@ -62,7 +62,7 @@ public class AccessoriesController : Controller
             Console.WriteLine(e);
         }
 
-        return View("/Views/Storage/EditResource/EditAccessory.cshtml", accessory);
+        return View("/Views/Resources/EditResource/EditAccessory.cshtml", accessory);
     }
 
     // POST: StorageController/Resources/Accessories/5
@@ -84,10 +84,10 @@ public class AccessoriesController : Controller
                 Console.WriteLine(e);
             }
 
-            return RedirectToAction("Index", "Storage");
+            return RedirectToAction("Index", "Resources");
         }
 
-        return View("/Views/Storage/EditResource/EditAccessory.cshtml", accessory);
+        return View("/Views/Resources/EditResource/EditAccessory.cshtml", accessory);
     }
 
     // GET: StorageController/Resources/Accessories/5
@@ -108,7 +108,7 @@ public class AccessoriesController : Controller
         }
 
         if (accessory == null) return NotFound();
-        return View("/Views/Storage/DeleteResource/DeleteAccessory.cshtml", accessory);
+        return View("/Views/Resources/DeleteResource/DeleteAccessory.cshtml", accessory);
     }
 
     // POST: StorageController/Resources/Accessories/5
@@ -126,6 +126,6 @@ public class AccessoriesController : Controller
             Console.WriteLine(e);
         }
 
-        return RedirectToAction("Index", "Storage");
+        return RedirectToAction("Index", "Resources");
     }
 }

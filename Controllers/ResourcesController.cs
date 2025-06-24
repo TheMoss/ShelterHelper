@@ -6,22 +6,22 @@ using X.PagedList.Extensions;
 
 namespace ShelterHelper.Controllers;
 
-public class StorageController : Controller
+public class ResourcesController : Controller
 {
    
     private readonly ILogger _logger;
-    private readonly ResourcesController _resourcesController;
+    private readonly API.Controllers.ResourcesController _resourcesController;
     private readonly SpeciesController _speciesController;
 
-    public StorageController(ILogger<StorageController> logger,
-        ResourcesController resourcesController, SpeciesController speciesController)
+    public ResourcesController(ILogger<ResourcesController> logger,
+        API.Controllers.ResourcesController resourcesController, SpeciesController speciesController)
     {
         _logger = logger;
         _resourcesController = resourcesController;
         _speciesController = speciesController;
     }
 
-    // GET: StorageController
+    // GET: ResourcesController
     public async Task<IActionResult> Index()
     {
         var resourcesDto = await _resourcesController.Get();
@@ -60,7 +60,7 @@ public class StorageController : Controller
         return View("Views/Storage/Species/Index.cshtml", species);
     }
 
-    // GET: StorageController/Create
+    // GET: ResourcesController/Create
     public async Task<IActionResult> Create()
     {
         // var viewModel = new SpeciesViewModel();
@@ -90,10 +90,10 @@ public class StorageController : Controller
         }
 
         ;
-        return View("Views/Storage/Species/Create.cshtml", resources);
+        return View("Views/Resources/Species/Create.cshtml", resources);
     }
 
-    // GET: StorageController/Details/5
+    // GET: ResourcesController/Details/5
     public IActionResult Details(int id)
     {
         return View();
@@ -134,7 +134,7 @@ public class StorageController : Controller
         return View(resources);
     }
 
-    // POST: StorageController/Create
+    // POST: ResourcesController/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(SpeciesViewModel viewModel)
@@ -177,7 +177,7 @@ public class StorageController : Controller
         return View(species);
     }
 
-    //GET : StorageController/Edit/5
+    //GET : ResourcesController/Edit/5
     public async Task<IActionResult> Edit(int id)
     {
         var speciesData = await _speciesController.GetSpecies(id);
@@ -198,10 +198,10 @@ public class StorageController : Controller
             SelectedToyId = speciesData.Value.Toy.ToyId
         };
 
-        return View("Views/Storage/Species/Edit.cshtml", speciesViewModel);
+        return View("Views/Resources/Species/Edit.cshtml", speciesViewModel);
     }
 
-    //POST : StorageController/Edit/5
+    //POST : ResourcesController/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ConfirmEditSpecies([Bind("SpeciesId", "SpeciesName", "SelectedDietId",
@@ -236,11 +236,11 @@ public class StorageController : Controller
         }
 
         TempData["Error"] = "Error, ModelState invalid.";
-        return View("Views/Storage/Species/Edit.cshtml");
+        return View("Views/Resources/Species/Edit.cshtml");
     }
 
 
-    // GET: StorageController/Species/5
+    // GET: ResourcesController/Species/5
     public async Task<IActionResult> Delete(int? id)
     {
         var species = new Species();
@@ -259,10 +259,10 @@ public class StorageController : Controller
         }
 
 
-        return View("Views/Storage/Species/Delete.cshtml", species);
+        return View("Views/Resources/Species/Delete.cshtml", species);
     }
 
-    // POST: StorageController/Species/5
+    // POST: ResourcesController/Species/5
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ConfirmDelete(int speciesId)

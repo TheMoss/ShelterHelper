@@ -8,7 +8,6 @@ namespace ShelterHelper.API.Controllers
 {
     [Route("api/animals")]
     [ApiController]
-   
     public class AnimalsController : ControllerBase
     {
         private readonly ShelterContext _context;
@@ -27,7 +26,6 @@ namespace ShelterHelper.API.Controllers
 
         // GET: api/animals/5
         [HttpGet("{id}")]
-        
         public async Task<ActionResult<Animal>> GetAnimal(int? id)
         {
             var animal = await _context.AnimalsDb.FindAsync(id);
@@ -62,6 +60,7 @@ namespace ShelterHelper.API.Controllers
                 {
                     return NotFound();
                 }
+
                 Console.WriteLine(ex);
             }
 
@@ -110,6 +109,7 @@ namespace ShelterHelper.API.Controllers
                 await _context.SaveChangesAsync();
                 return Ok();
             }
+
             return BadRequest();
         }
 

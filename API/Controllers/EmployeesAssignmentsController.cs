@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShelterHelper.Models;
@@ -12,7 +6,6 @@ namespace ShelterHelper.API.Controllers
 {
     [Route("api/EmployeesAssignments")]
     [ApiController]
-    
     public class EmployeesAssignmentsController : ControllerBase
     {
         private readonly ShelterContext _context;
@@ -28,7 +21,7 @@ namespace ShelterHelper.API.Controllers
         {
             return await _context.EmployeesAssignments.ToListAsync();
         }
-        
+
         // GET: api/EmployeesAssignments/assignmentId?={assignmentId}
         [HttpGet("assignmentId")]
         public async Task<List<EmployeeAssignment>> GetEmployeesFilteredByAssignment([FromQuery] string assignmentId)
@@ -37,10 +30,10 @@ namespace ShelterHelper.API.Controllers
             var filteredEmployeesList =
                 allEmployeesAssignmentsList
                     .Where(assignment => assignment.AssignmentId.ToString() == assignmentId).ToList();
-            
+
             return filteredEmployeesList;
         }
-        
+
         // GET: api/EmployeesAssignments/employeePersonalId?={employeePersonalId}
         [HttpGet("employeePersonalId")]
         public async Task<List<EmployeeAssignment>> GetAssignmentsOfEmployee([FromQuery] string employeePersonalId)
@@ -49,13 +42,14 @@ namespace ShelterHelper.API.Controllers
             var filteredAssignmentsList =
                 allEmployeesAssignmentsList
                     .Where(employee => employee.Employee.EmployeePersonalId.ToString() == employeePersonalId).ToList();
-            
+
             return filteredAssignmentsList;
         }
-        
+
         // GET: api/EmployeesAssignments/assignmentId?={assignmentId}&employeeId?={employeeId}
         [HttpGet("query")]
-        public async Task<List<EmployeeAssignment>> GetEmployeeAssignmentByAssignmentAndEmployeeIds([FromQuery] string assignmentId, [FromQuery] string employeeId)
+        public async Task<List<EmployeeAssignment>> GetEmployeeAssignmentByAssignmentAndEmployeeIds(
+            [FromQuery] string assignmentId, [FromQuery] string employeeId)
         {
             var allEmployeesAssignmentsList = await _context.EmployeesAssignments.ToListAsync();
             var filteredEmployeeAssignmentsList =
@@ -63,7 +57,7 @@ namespace ShelterHelper.API.Controllers
                     .Where(assignment => assignment.AssignmentId.ToString() == assignmentId)
                     .Where(employee => employee.EmployeeId.ToString() == employeeId)
                     .ToList();
-            
+
             return filteredEmployeeAssignmentsList;
         }
 
@@ -83,7 +77,7 @@ namespace ShelterHelper.API.Controllers
 
         // PUT: api/EmployeesAssignments/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        
+
         [HttpPut("{id}")]
         public async Task<IActionResult> PutEmployeesAssignments(int? id, EmployeeAssignment employeeAssignment)
         {
@@ -116,14 +110,15 @@ namespace ShelterHelper.API.Controllers
         // POST: api/EmployeesAssignments
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<EmployeeAssignment>> PostEmployeesAssignments(EmployeeAssignment employeeAssignment)
+        public async Task<ActionResult<EmployeeAssignment>> PostEmployeesAssignments(
+            EmployeeAssignment employeeAssignment)
         {
             _context.EmployeesAssignments.Add(employeeAssignment);
             await _context.SaveChangesAsync();
-        
+
             return CreatedAtAction("GetEmployeesAssignments", new { id = employeeAssignment.Id }, employeeAssignment);
         }
-       
+
         // DELETE: api/EmployeesAssignments/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmployeeAssignment(int? id)
@@ -139,7 +134,7 @@ namespace ShelterHelper.API.Controllers
 
             return NoContent();
         }
-        
+
         // DELETE: api/EmployeesAssignments
         [HttpDelete]
         public async Task<IActionResult> DeleteEmployeesAssignmentsByEmployee(EmployeeAssignment employeeAssignment)

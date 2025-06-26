@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.JsonPatch;
@@ -13,7 +12,7 @@ namespace ShelterHelper.API.Controllers
     public class AssignmentsController : ControllerBase
     {
         private readonly ShelterContext _context;
-        
+
         public AssignmentsController(ShelterContext context)
         {
             _context = context;
@@ -93,12 +92,12 @@ namespace ShelterHelper.API.Controllers
             {
                 return NotFound();
             }
-            
+
             patch.ApplyTo(assignment);
             await _context.SaveChangesAsync();
             return Ok();
         }
-        
+
         // DELETE: api/Assignments/5
         [HttpDelete("{id}")]
         [Authorize(Roles = "Manager")]

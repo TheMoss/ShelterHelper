@@ -400,3 +400,8 @@ select option, .select2-results__option, .select2-results__option--selected {
     margin-bottom:auto;
     margin-left:5px;
 }
+
+.profile-assignments{
+    width:50%;
+    overflow:auto;
+}

@@ -27,6 +27,7 @@ namespace ShelterHelper.Controllers
         }
 
         // GET: HomeController
+        [HttpGet]
         public async Task<IActionResult> Index(int? page, string? searchString, string filterBy, string? sortOrder)
         {
             var allAnimals = await _animalsController.GetAnimalsDb();
@@ -138,7 +139,7 @@ namespace ShelterHelper.Controllers
             animal.AdoptionDay = new DateOnly(1900, 1, 1);
             if (ModelState.IsValid)
             {
-                _animalsController.PostAnimal(animal);
+                await _animalsController.PostAnimal(animal);
                 TempData["Success"] = "New animal added to the database.";
                 return RedirectToAction("Index");
             }

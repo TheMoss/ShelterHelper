@@ -8,7 +8,6 @@ namespace ShelterHelper.Controllers;
 
 public class ResourcesController : Controller
 {
-   
     private readonly ILogger _logger;
     private readonly API.Controllers.ResourcesController _resourcesController;
     private readonly SpeciesController _speciesController;
@@ -33,7 +32,7 @@ public class ResourcesController : Controller
             resources.DietsList = resourcesDto.Value.DietsList;
             resources.ToysList = resourcesDto.Value.ToysList;
         }
-        
+
         return View(resources);
     }
 
@@ -57,28 +56,12 @@ public class ResourcesController : Controller
         var pageNumber = page ?? 1;
         var pagedList = species.ToPagedList(pageNumber, 10);
         ViewBag.PagedList = pagedList;
-        return View("Views/Storage/Species/Index.cshtml", species);
+        return View("Views/Resources/Species/Index.cshtml", species);
     }
 
     // GET: ResourcesController/Create
     public async Task<IActionResult> Create()
     {
-        // var viewModel = new SpeciesViewModel();
-        //
-        // var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
-        // try
-        // {
-        //     var response = await httpClient.GetAsync(ResourcesEndpoint);
-        //     if (response.IsSuccessStatusCode)
-        //     {
-        //         var content = await response.Content.ReadAsStringAsync();
-        //         viewModel = JsonConvert.DeserializeObject<SpeciesViewModel>(content);
-        //     }
-        // }
-        // catch (Exception e)
-        // {
-        //     Console.WriteLine(e);
-        // }
         var resourcesDto = await _resourcesController.Get();
         var resources = new SpeciesViewModel();
         if (resourcesDto.Value is not null)
@@ -89,7 +72,6 @@ public class ResourcesController : Controller
             resources.ToysList = resourcesDto.Value.ToysList;
         }
 
-        ;
         return View("Views/Resources/Species/Create.cshtml", resources);
     }
 
@@ -101,25 +83,6 @@ public class ResourcesController : Controller
 
     public async Task<IActionResult> AddResources()
     {
-        // var viewModel = new SpeciesViewModel();
-        //
-        // var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
-        //
-        // var response = await httpClient.GetAsync(ResourcesEndpoint);
-        // try
-        // {
-        //     
-        //     if (response.IsSuccessStatusCode)
-        //     {
-        //         
-        //         var content = await response.Content.ReadAsStringAsync();
-        //         viewModel = JsonConvert.DeserializeObject<SpeciesViewModel>(content);
-        //     }
-        // }
-        // catch (Exception e)
-        // {
-        //     Console.WriteLine(e);
-        // }
         var resourcesDto = await _resourcesController.Get();
         var resources = new SpeciesViewModel();
         if (resourcesDto.Value is not null)
@@ -130,7 +93,6 @@ public class ResourcesController : Controller
             resources.ToysList = resourcesDto.Value.ToysList;
         }
 
-        ;
         return View(resources);
     }
 
@@ -139,10 +101,6 @@ public class ResourcesController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(SpeciesViewModel viewModel)
     {
-        //id as value
-
-        //var httpClient = _httpClientFactory.CreateClient("ShelterHelperAPI");
-
         var species = new Species
         {
             SpeciesName = viewModel.Species.SpeciesName,
@@ -152,13 +110,10 @@ public class ResourcesController : Controller
             AccessoryId = viewModel.SelectedAccessoryId
         };
 
-
         if (ModelState.IsValid)
         {
             try
-            {
-
-                //var response = await httpClient.PostAsJsonAsync(SpeciesEndpoint, species);
+            { 
                 await _speciesController.PostSpecies(species);
                 TempData["Success"] = "Success, database updated.";
             }
@@ -257,7 +212,6 @@ public class ResourcesController : Controller
         {
             Console.WriteLine(e);
         }
-
 
         return View("Views/Resources/Species/Delete.cshtml", species);
     }

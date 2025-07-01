@@ -12,7 +12,7 @@ namespace ShelterHelper.API.Controllers
     public class ResourcesController : ControllerBase
     {
         private readonly ShelterContext _context;
-        
+
         public ResourcesController(ShelterContext context)
         {
             _context = context;
@@ -36,7 +36,6 @@ namespace ShelterHelper.API.Controllers
 
         //GET api/resources/diets/1
         [HttpGet("diets/{id}")]
-        [EnableCors("AllowSpecificOrigin")]
         public async Task<ActionResult<Diet>> GetDiet(int id)
         {
             var diet = await _context.Diet.FindAsync(id);
@@ -61,8 +60,7 @@ namespace ShelterHelper.API.Controllers
         //PATCH api/resources/diets/1
         [HttpPatch]
         [Route("diets/{id}")]
-        [EnableCors("AllowSpecificOrigin")]
-        public async Task<ActionResult> PatchDiet(int id, JsonPatchDocument<Diet> patch)
+        public async Task<ActionResult> PatchDiet(int id, [FromBody] JsonPatchDocument<Diet> patch)
         {
             Diet diet = await _context.Diet.FindAsync(id);
             patch.ApplyTo(diet);
@@ -119,7 +117,6 @@ namespace ShelterHelper.API.Controllers
 
         //GET api/resources/beddings/1
         [HttpGet("beddings/{id}")]
-        [EnableCors("AllowSpecificOrigin")]
         public async Task<ActionResult<Bedding>> GetBedding(int id)
         {
             var bedding = await _context.Bedding.FindAsync(id);
@@ -140,12 +137,11 @@ namespace ShelterHelper.API.Controllers
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(Get), new { id = bedding.BeddingId }, bedding);
         }
-        
+
         //PATCH api/resources/beddings/1
         [HttpPatch]
         [Route("beddings/{id}")]
-        [EnableCors("AllowSpecificOrigin")]
-        public async Task<ActionResult> PatchBedding(int id, JsonPatchDocument<Bedding> patch)
+        public async Task<ActionResult> PatchBedding(int id, [FromBody] JsonPatchDocument<Bedding> patch)
         {
             Bedding bedding = await _context.Bedding.FindAsync(id);
             patch.ApplyTo(bedding);
@@ -203,7 +199,6 @@ namespace ShelterHelper.API.Controllers
 
         //GET api/resources/toys/1
         [HttpGet("toys/{id}")]
-        [EnableCors("AllowSpecificOrigin")]
         public async Task<ActionResult<Toy>> GetToy(int id)
         {
             var toy = await _context.Toy.FindAsync(id);
@@ -225,12 +220,11 @@ namespace ShelterHelper.API.Controllers
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(Get), new { id = toy.ToyId }, toy);
         }
-        
+
         //PATCH api/resources/toys/1
         [HttpPatch]
         [Route("toys/{id}")]
-        [EnableCors("AllowSpecificOrigin")]
-        public async Task<ActionResult> PatchToy(int id, JsonPatchDocument<Toy> patch)
+        public async Task<ActionResult> PatchToy(int id, [FromBody] JsonPatchDocument<Toy> patch)
         {
             Toy toy = await _context.Toy.FindAsync(id);
             patch.ApplyTo(toy);
@@ -288,7 +282,6 @@ namespace ShelterHelper.API.Controllers
 
         //GET api/resources/accessories/1
         [HttpGet("accessories/{id}")]
-        [EnableCors("AllowSpecificOrigin")]
         public async Task<ActionResult<Accessory>> GetAccessory(int id)
         {
             var accessory = await _context.Accessory.FindAsync(id);
@@ -309,12 +302,11 @@ namespace ShelterHelper.API.Controllers
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(Get), new { id = accessory.AccessoryId }, accessory);
         }
-        
+
         //PATCH api/resources/accessories/1
         [HttpPatch]
         [Route("accessories/{id}")]
-        [EnableCors("AllowSpecificOrigin")]
-        public async Task<ActionResult> PatchAccessory(int id, JsonPatchDocument<Accessory> patch)
+        public async Task<ActionResult> PatchAccessory(int id, [FromBody] JsonPatchDocument<Accessory> patch)
         {
             Accessory accessory = await _context.Accessory.FindAsync(id);
             patch.ApplyTo(accessory);

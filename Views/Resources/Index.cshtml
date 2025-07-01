@@ -29,8 +29,8 @@
                 <td>@product.AccessoryName</td>
                 <td>@product.Quantity</td>
                 <td>
-                    <a asp-action="EditAccessory" asp-route-id="@product.AccessoryId">Edit</a> |
-                    <a asp-action="DeleteAccessory" asp-route-id="@product.AccessoryId">Delete</a>
+                    <a asp-controller="Accessories" asp-action="EditAccessory" asp-route-id="@product.AccessoryId">Edit</a> |
+                    <a asp-controller="Accessories" asp-action="DeleteAccessory" asp-route-id="@product.AccessoryId">Delete</a>
                 </td>
             </tr>
         }
@@ -54,8 +54,8 @@
                 <td>@product.BeddingName</td>
                 <td>@product.Quantity_kg kg</td>
                 <td>
-                    <a asp-action="EditBedding" asp-route-id="@product.BeddingId">Edit</a> |
-                    <a asp-action="DeleteBedding" asp-route-id="@product.BeddingId">Delete</a>
+                    <a asp-controller="Beddings" asp-action="EditBedding" asp-route-id="@product.BeddingId">Edit</a> |
+                    <a asp-controller="Beddings" asp-action="DeleteBedding" asp-route-id="@product.BeddingId">Delete</a>
                 </td>
             </tr>
         }
@@ -78,8 +78,8 @@
                 <td>@product.DietName</td>
                 <td>@product.Quantity_kg kg</td>
                 <td>
-                    <a asp-action="EditDiet" asp-route-id="@product.DietId">Edit</a> |
-                    <a asp-action="DeleteDiet" asp-route-id="@product.DietId">Delete</a>
+                    <a asp-controller="Diets" asp-action="EditDiet" asp-route-id="@product.DietId">Edit</a> |
+                    <a asp-controller="Diets" asp-action="DeleteDiet" asp-route-id="@product.DietId">Delete</a>
                 </td>
             </tr>
         }
@@ -102,8 +102,8 @@
                 <td>@product.ToyName</td>
                 <td>@product.Quantity</td>
                 <td>
-                    <a asp-action="EditToy" asp-route-id="@product.ToyId">Edit</a> |
-                    <a asp-action="DeleteToy" asp-route-id="@product.ToyId">Delete</a>
+                    <a asp-controller="Toys" asp-action="EditToy" asp-route-id="@product.ToyId">Edit</a> |
+                    <a asp-controller="Toys" asp-action="DeleteToy" asp-route-id="@product.ToyId">Delete</a>
                 </td>
             </tr>
         }

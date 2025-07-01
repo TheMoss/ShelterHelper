@@ -1,0 +1,71 @@
+@model ShelterHelper.ViewModels.EmployeeViewModel
+@{
+    ViewData["Title"] = "Profile";
+    string[] priorities = ["Low", "Medium", "High", "Very high"];
+}
+
+<div class="contents">
+    <h1>User</h1>
+    <br/>
+
+
+<dl class="row">
+	<dt class="col-sm-2">
+		@Html.DisplayNameFor(model => model.Employee.EmployeeName)
+	</dt>
+    
+	<dd class="col-sm-10">
+		@Html.DisplayFor(model => model.Employee.EmployeeName)
+	</dd>
+    
+	<dt class="col-sm-2">
+		@Html.DisplayNameFor(model => model.Employee.EmployeePersonalId)
+	</dt>
+    
+	<dd class="col-sm-10">
+		@Html.DisplayFor(model => model.Employee.EmployeePersonalId)
+	</dd>
+    
+	<dt class="col-sm-2">
+		<p>Role</p>
+	</dt>
+    
+	<dd class="col-sm-10">
+		@if (User.IsInRole("Manager"))
+		{
+			<p>Manager</p>
+		}
+		else
+		{
+			<p>Employee</p>
+		}
+	</dd>
+</dl>
+	@if (Model.EmployeeAssignmentsList is not null)
+	{
+		<table class="table profile-assignments">
+			<thead>
+			<tr>
+				<th>@Html.DisplayNameFor(model => model.EmployeeAssignment.Assignment.Title)</th>
+				<th>@Html.DisplayNameFor(model => model.EmployeeAssignment.Assignment.Description)</th>
+				<th>@Html.DisplayNameFor(model => model.EmployeeAssignment.Assignment.Priority)</th>
+			</tr>
+			</thead>
+
+			<tbody>
+			@foreach (var assignment in Model.EmployeeAssignmentsList)
+			{
+				@if (assignment.Assignment.IsCompleted != true)
+				{
+				<tr>
+					<td>@assignment.Assignment.Title</td>
+					<td>@assignment.Assignment.Description</td>
+					<td>@priorities[assignment.Assignment.Priority]</td>
+				</tr>
+				}
+			}
+			</tbody>
+		</table>
+	}
+	<a asp-controller="Assignments" asp-action="Index">Go to Assignments</a>
+</div>

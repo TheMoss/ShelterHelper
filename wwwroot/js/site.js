@@ -1,5 +1,5 @@
 ﻿async function getSelectedEmployees(assignmentId) {
-    const url = `https://localhost:7147/api/EmployeesAssignments/Search?assignmentId=${assignmentId}`;
+    const url = `https://localhost:7082/api/EmployeesAssignments/Search?assignmentId=${assignmentId}`;
     let assignedEmployees = [];
     try {
         const response = await fetch(url);
@@ -70,7 +70,7 @@ function generateChipNumber() {
 
 async function addResourcesHelper(event, resourceType, itemId, inputValue) {
     event.preventDefault();
-    const url = `https://localhost:7147/api/resources/${resourceType}/${itemId}`;
+    const url = `https://localhost:7082/api/resources/${resourceType}/${itemId}`;
     let updatedQuantity;
     if (inputValue < 1) {
         throw new Error('The quantity has to be larger than 0.');
@@ -107,7 +107,7 @@ async function addResourcesHelper(event, resourceType, itemId, inputValue) {
 }
 
 async function moveToDoing(assignmentId) {
-    const assignmentsUrl = `https://localhost:7147/api/assignments/${assignmentId}`;
+    const assignmentsUrl = `https://localhost:7082/api/assignments/${assignmentId}`;
     await fetch(assignmentsUrl, {
         method: "PATCH",
         body: JSON.stringify([{
@@ -124,7 +124,7 @@ async function moveToDoing(assignmentId) {
 }
 
 async function moveToDone(assignmentId) {
-    const assignmentsUrl = `https://localhost:7147/api/assignments/${assignmentId}`;
+    const assignmentsUrl = `https://localhost:7082/api/assignments/${assignmentId}`;
     await fetch(assignmentsUrl, {
         method: "PATCH",
         body: JSON.stringify([{

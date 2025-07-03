@@ -52,7 +52,7 @@ footer {
 .container {
     min-width: 100%;
     grid-column: 2;
-    padding: 20px;
+    padding: 20px 40px 20px 20px;
     max-height: 87vh;
     margin-top: 4px;
     overflow:auto;
@@ -313,12 +313,18 @@ select option, .select2-results__option, .select2-results__option--selected {
     }
 }
 
-
+#filteringForm{
+    padding: 0 0 18px 0;
+}
 #filteringForm .form-control{
     min-width:200px;
 }
 #filteringForm > * {
-    display: inline-block;
+    display: inline-block;   
+    padding: 0 10px;
+}
+
+#filteringForm > input{
     height: 40px;
 }
 
